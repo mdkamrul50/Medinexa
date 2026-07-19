@@ -84,7 +84,7 @@ export default function DashboardMockup() {
 
           {/* Doctor Profile Widget */}
           <div className="mt-auto flex items-center gap-2.5 rounded-xl border border-border/50 bg-card p-2.5 shadow-sm">
-            <div className="relative h-7 w-7 rounded-full bg-slate-250 overflow-hidden">
+            <div className="relative h-7 w-7 rounded-full bg-slate-200 overflow-hidden">
               <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url('https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=150&q=80')` }} />
               <div className="absolute bottom-0 right-0 h-2 w-2 rounded-full border border-white dark:border-slate-800 bg-green-500" />
             </div>

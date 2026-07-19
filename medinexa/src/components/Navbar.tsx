@@ -92,7 +92,7 @@ export default function Navbar() {
                     {isActive && (
                       <motion.div
                         layoutId="activeNavIndicator"
-                        className="absolute inset-0 bg-white dark:bg-slate-750 shadow-sm border border-slate-100/80 dark:border-slate-700/50 rounded-full -z-10"
+                        className="absolute inset-0 bg-white dark:bg-card shadow-sm border border-slate-200/50 dark:border-slate-800 rounded-full -z-10"
                         transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                       />
                     )}
@@ -206,7 +206,7 @@ export default function Navbar() {
                 <input 
                   type="text" 
                   placeholder="Search clinic, doctors..."
-                  className="w-full rounded-xl border border-border bg-slate-50 dark:bg-slate-800/80 py-2.5 pl-10 pr-4 text-sm text-slate-700 dark:text-slate-200 outline-none focus:border-primary/50 focus:bg-white dark:focus:bg-slate-850"
+                  className="w-full rounded-xl border border-border bg-slate-50 dark:bg-slate-800/80 py-2.5 pl-10 pr-4 text-sm text-slate-700 dark:text-slate-200 outline-none focus:border-primary/50 focus:bg-white dark:focus:bg-card"
                 />
               </div>
 
