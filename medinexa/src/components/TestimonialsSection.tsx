@@ -136,7 +136,7 @@ const cardVariants = {
 
 export default function TestimonialsSection() {
   return (
-    <section id="testimonials" className="relative py-28 overflow-hidden bg-white dark:bg-slate-955/20 border-t border-border/30">
+    <section id="testimonials" className="relative py-28 overflow-hidden bg-white dark:bg-slate-950/20 border-t border-border/30">
       
       {/* Decorative Floating Blobs */}
       <div className="absolute top-20 right-[15%] w-72 h-72 rounded-full bg-primary/5 blur-3xl -z-10 pointer-events-none animate-pulse" />

@@ -5,6 +5,8 @@ import DepartmentsSection from "@/components/DepartmentsSection";
 import DoctorsSection from "@/components/DoctorsSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import AppointmentCTA from "@/components/AppointmentCTA";
+import FAQSection from "@/components/FAQSection";
+import Footer from "@/components/Footer";
 
 export default function Home() {
   return (
@@ -31,7 +33,13 @@ export default function Home() {
 
         {/* Section 6: Appointment Call-to-Action */}
         <AppointmentCTA />
+
+        {/* Section 7: Frequently Asked Questions */}
+        <FAQSection />
       </main>
+
+      {/* Page Footer */}
+      <Footer />
     </div>
   );
 }
