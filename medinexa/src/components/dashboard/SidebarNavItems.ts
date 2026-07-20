@@ -11,11 +11,13 @@ import {
   FiSettings,
   FiHelpCircle,
   FiLogOut,
+  FiUserPlus,
 } from "react-icons/fi";
 import { NavItem } from "./types";
 
 export const mainNavItems: NavItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: FiGrid },
+  { label: "Users", href: "/dashboard/users", icon: FiUserPlus },
   { label: "Patients", href: "/dashboard/patients", icon: FiUsers },
   { label: "Doctors", href: "/dashboard/doctors", icon: FiUserCheck },
   { label: "Appointments", href: "/dashboard/appointments", icon: FiCalendar },

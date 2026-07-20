@@ -12,6 +12,8 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     autoSignIn: true,
+    minPasswordLength: 5,
+    maxPasswordLength: 128,
   },
   advanced: {
     cookiePrefix: "medinexa",

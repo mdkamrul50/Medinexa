@@ -81,8 +81,18 @@ export default function RegisterForm() {
       return;
     }
 
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters');
+    if (password.length < 5) {
+      setError('Password must be at least 5 characters');
+      return;
+    }
+
+    if (!/[a-zA-Z]/.test(password)) {
+      setError('Password must contain at least one letter');
+      return;
+    }
+
+    if (!/[0-9]/.test(password)) {
+      setError('Password must contain at least one number');
       return;
     }
 
@@ -106,8 +116,10 @@ export default function RegisterForm() {
   const getPasswordStrength = () => {
     if (!password) return { level: 0 };
     const len = password.length;
-    if (len < 4) return { level: 1 };
-    if (len < 8) return { level: 2 };
+    const hasLetter = /[a-zA-Z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    if (len < 5) return { level: 1 };
+    if (len < 8 || !hasLetter || !hasNumber) return { level: 2 };
     if (len < 12) return { level: 3 };
     return { level: 4 };
   };

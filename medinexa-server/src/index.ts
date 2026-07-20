@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import { toNodeHandler, fromNodeHeaders } from "better-auth/node";
 import { auth } from "./auth.js";
+import { getDB } from "./db.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -17,7 +18,59 @@ app.use(
   })
 );
 
-app.all("/api/auth/*", toNodeHandler(auth));
+app.use(express.json());
+
+app.use("/api/auth/sign-up/email", (req, res, next) => {
+  if (req.method !== "POST") return next();
+
+  const { password } = req.body;
+  if (!password || typeof password !== "string") {
+    res.status(422).json({ message: "Password is required" });
+    return;
+  }
+
+  if (password.length < 5) {
+    res.status(422).json({ message: "Password must be at least 5 characters" });
+    return;
+  }
+
+  if (!/[a-zA-Z]/.test(password)) {
+    res.status(422).json({ message: "Password must contain at least one letter" });
+    return;
+  }
+
+  if (!/[0-9]/.test(password)) {
+    res.status(422).json({ message: "Password must contain at least one number" });
+    return;
+  }
+
+  next();
+});
+
+app.all("/api/auth/*path", toNodeHandler(auth));
+
+app.get("/api/users", async (req, res) => {
+  try {
+    const session = await auth.api.getSession({ headers: fromNodeHeaders(req.headers) });
+    if (!session) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    const db = await getDB();
+    const users = await db
+      .collection("users")
+      .find({}, { projection: { _id: 1, name: 1, email: 1, emailVerified: 1, createdAt: 1, updatedAt: 1 } })
+      .sort({ createdAt: -1 })
+      .toArray();
+
+    const total = await db.collection("users").countDocuments();
+
+    res.json({ total, users });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch users" });
+  }
+});
 
 app.get("/health", (_req, res) => {
   res.json({ status: "ok" });

@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 
-const AUTH_URL = process.env.AUTH_URL!;
+const AUTH_URL = process.env.AUTH_URL || "http://localhost:3001";
 
 export async function getServerSession() {
   const cookieHeader = (await headers()).get("cookie") ?? "";
