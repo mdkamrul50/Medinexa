@@ -6,6 +6,9 @@ const ROUTE_ROLE_MAP: Record<string, UserRole[]> = {
   "/dashboard/doctor": ["doctor"],
   "/dashboard/patient": ["patient"],
   "/dashboard/receptionist": ["receptionist"],
+  "/dashboard/patients": ["admin", "doctor", "receptionist"],
+  "/dashboard/doctors": ["admin", "doctor"],
+  "/dashboard/users": ["admin"],
 };
 
 const ROLE_HIERARCHY: Record<UserRole, number> = {
