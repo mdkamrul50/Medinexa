@@ -60,7 +60,7 @@ app.get("/api/users", async (req, res) => {
     const db = await getDB();
     const users = await db
       .collection("users")
-      .find({}, { projection: { _id: 1, name: 1, email: 1, emailVerified: 1, createdAt: 1, updatedAt: 1 } })
+      .find({}, { projection: { _id: 1, name: 1, email: 1, emailVerified: 1, role: 1, createdAt: 1, updatedAt: 1 } })
       .sort({ createdAt: -1 })
       .toArray();
 
@@ -69,6 +69,43 @@ app.get("/api/users", async (req, res) => {
     res.json({ total, users });
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch users" });
+  }
+});
+
+app.patch("/api/users/role", async (req, res) => {
+  try {
+    const session = await auth.api.getSession({ headers: fromNodeHeaders(req.headers) });
+    if (!session) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    const { userId, role } = req.body;
+    if (!userId || !role) {
+      res.status(400).json({ message: "userId and role are required" });
+      return;
+    }
+
+    const validRoles = ["admin", "doctor", "patient", "receptionist"];
+    if (!validRoles.includes(role)) {
+      res.status(400).json({ message: "Invalid role" });
+      return;
+    }
+
+    const db = await getDB();
+    const result = await db.collection("users").updateOne(
+      { _id: userId },
+      { $set: { role } }
+    );
+
+    if (result.matchedCount === 0) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+    res.json({ message: "Role updated successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to update role" });
   }
 });
 

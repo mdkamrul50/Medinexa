@@ -11,7 +11,7 @@ import {
   FiLoader,
 } from "react-icons/fi";
 import { authClient } from "@/lib/auth-client";
-import type { UserData } from "./types";
+import { useUser } from "@/hooks/useUser";
 
 export default function UserDropdown() {
   const router = useRouter();
@@ -19,19 +19,11 @@ export default function UserDropdown() {
   const [isSigningOut, setIsSigningOut] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  const { data: session, isPending } = authClient.useSession();
+  const { user, role, isPending, isAuthenticated } = useUser();
 
-  const user: UserData = session?.user
-    ? {
-        name: session.user.name,
-        email: session.user.email,
-        role: "doctor",
-      }
-    : {
-        name: "Guest",
-        email: "",
-        role: "patient",
-      };
+  const displayName = user?.name ?? "Guest";
+  const displayEmail = user?.email ?? "";
+  const displayImage = user?.image ?? null;
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -49,7 +41,7 @@ export default function UserDropdown() {
     router.push("/");
   };
 
-  const initials = user.name
+  const initials = displayName
     .split(" ")
     .map((n) => n[0])
     .join("")
@@ -62,15 +54,21 @@ export default function UserDropdown() {
         onClick={() => setOpen(!open)}
         className="flex items-center gap-2.5 rounded-xl border border-border bg-slate-50 dark:bg-slate-800/40 px-3 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:border-primary/30 transition-all cursor-pointer"
       >
-        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-blue-500 text-[10px] font-bold text-white shadow-sm">
-          {isPending ? <FiLoader className="h-3.5 w-3.5 animate-spin" /> : initials}
+        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-blue-500 text-[10px] font-bold text-white shadow-sm overflow-hidden">
+          {isPending ? (
+            <FiLoader className="h-3.5 w-3.5 animate-spin" />
+          ) : displayImage ? (
+            <img src={displayImage} alt="" className="h-full w-full object-cover" />
+          ) : (
+            initials
+          )}
         </div>
         <div className="hidden sm:block text-left">
-          <p className="text-xs font-semibold text-heading leading-tight">
-            {user.name}
+          <p className="text-xs font-semibold text-heading leading-tight max-w-[100px] truncate">
+            {displayName}
           </p>
           <p className="text-[10px] text-muted capitalize leading-tight">
-            {user.role}
+            {isAuthenticated && role ? role : "Guest"}
           </p>
         </div>
         <FiChevronDown
@@ -87,12 +85,21 @@ export default function UserDropdown() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.96 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="absolute right-0 top-full mt-2 w-[220px] origin-top-right"
+            className="absolute right-0 top-full mt-2 w-[240px] origin-top-right"
           >
             <div className="rounded-2xl border border-border bg-card shadow-xl shadow-black/5 dark:shadow-black/20 overflow-hidden">
-              <div className="px-4 py-3.5 border-b border-border">
-                <p className="text-sm font-bold text-heading">{user.name}</p>
-                <p className="text-xs text-muted mt-0.5">{user.email}</p>
+              <div className="flex items-center gap-3 px-4 py-3.5 border-b border-border">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-blue-500 text-sm font-bold text-white shadow-sm overflow-hidden">
+                  {displayImage ? (
+                    <img src={displayImage} alt="" className="h-full w-full object-cover" />
+                  ) : (
+                    initials
+                  )}
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-bold text-heading truncate">{displayName}</p>
+                  <p className="text-xs text-muted truncate">{displayEmail}</p>
+                </div>
               </div>
 
               <div className="p-1.5">

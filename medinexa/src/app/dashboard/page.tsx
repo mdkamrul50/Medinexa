@@ -1,40 +1,58 @@
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { FiShield } from "react-icons/fi";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import PageContainer from "@/components/dashboard/PageContainer";
+import { useUser } from "@/hooks/useUser";
+import { getDefaultRouteForRole } from "@/lib/auth-utils";
+import type { UserRole } from "@/lib/auth-utils";
 
 export default function DashboardPage() {
-  return (
-    <DashboardLayout>
-      <PageContainer
-        title="Dashboard"
-        subtitle="Welcome back, Dr. Jenkins. Here is your hospital overview."
-        breadcrumbs={[{ label: "Dashboard" }]}
-      >
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[
-            { label: "Total Patients", value: "12,840", change: "+12.5%", color: "from-blue-500 to-primary" },
-            { label: "Active Appointments", value: "48", change: "+8 today", color: "from-teal-500 to-secondary" },
-            { label: "Available Beds", value: "124", change: "34% occupied", color: "from-amber-500 to-accent" },
-            { label: "Revenue (MTD)", value: "$284.5K", change: "+18.2%", color: "from-violet-500 to-purple-500" },
-          ].map((stat, i) => (
-            <div
-              key={i}
-              className="group relative rounded-2xl border border-border bg-card p-6 hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20 transition-all duration-300"
-            >
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br opacity-0 group-hover:opacity-[0.03] transition-opacity duration-300" />
-              <p className="text-sm font-semibold text-muted">{stat.label}</p>
-              <p className="text-3xl font-extrabold text-heading tracking-tight mt-1">
-                {stat.value}
-              </p>
-              <div className="flex items-center gap-1.5 mt-2">
-                <div
-                  className={`h-1.5 w-1.5 rounded-full bg-gradient-to-r ${stat.color}`}
-                />
-                <span className="text-xs font-medium text-body">{stat.change}</span>
-              </div>
+  const router = useRouter();
+  const { role, isPending, isAuthenticated } = useUser();
+
+  useEffect(() => {
+    if (isPending) return;
+    if (!isAuthenticated) {
+      router.replace("/login");
+      return;
+    }
+    if (role) {
+      router.replace(getDefaultRouteForRole(role as UserRole));
+    }
+  }, [isPending, isAuthenticated, role, router]);
+
+  if (isPending) {
+    return (
+      <DashboardLayout>
+        <PageContainer title="Dashboard" breadcrumbs={[{ label: "Dashboard" }]}>
+          <div className="flex items-center justify-center py-20">
+            <div className="flex flex-col items-center gap-3">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+              <p className="text-sm text-muted">Loading your dashboard...</p>
             </div>
-          ))}
-        </div>
-      </PageContainer>
-    </DashboardLayout>
-  );
+          </div>
+        </PageContainer>
+      </DashboardLayout>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <DashboardLayout>
+        <PageContainer title="Dashboard" breadcrumbs={[{ label: "Dashboard" }]}>
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <FiShield className="h-12 w-12 text-muted mb-4" />
+            <h2 className="text-xl font-bold text-heading mb-2">Not signed in</h2>
+            <p className="text-body mb-6">Please sign in to view your dashboard.</p>
+            <a href="/login" className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-white font-semibold hover:bg-primary/90 transition-colors">Sign In</a>
+          </div>
+        </PageContainer>
+      </DashboardLayout>
+    );
+  }
+
+  return null;
 }

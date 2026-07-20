@@ -6,7 +6,9 @@ import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiChevronLeft, FiChevronRight, FiActivity, FiLoader } from "react-icons/fi";
 import { authClient } from "@/lib/auth-client";
-import { mainNavItems, bottomNavItems } from "./SidebarNavItems";
+import { useUser } from "@/hooks/useUser";
+import { roleNavMap, bottomNavItems } from "./SidebarNavItems";
+import type { UserRole } from "@/lib/auth-utils";
 
 interface SidebarProps {
   collapsed: boolean;
@@ -24,6 +26,11 @@ export default function Sidebar({
   const pathname = usePathname();
   const router = useRouter();
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const { role, isPending } = useUser();
+
+  const navItems = role && !isPending
+    ? (roleNavMap[role as UserRole] ?? roleNavMap.patient)
+    : [];
 
   const handleSignOut = async () => {
     setIsSigningOut(true);
@@ -76,7 +83,7 @@ export default function Sidebar({
 
       {/* Main Navigation */}
       <nav className="flex-1 overflow-y-auto overflow-x-hidden px-3 py-4 space-y-1 scrollbar-thin">
-        {mainNavItems.map((item) => {
+        {navItems.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
           const Icon = item.icon;
 

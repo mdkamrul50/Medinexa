@@ -19,6 +19,7 @@ export async function getServerSession() {
         email: string;
         emailVerified: boolean;
         image?: string;
+        role?: string;
         createdAt: string;
         updatedAt: string;
       };

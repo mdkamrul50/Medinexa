@@ -15,6 +15,16 @@ export const auth = betterAuth({
     minPasswordLength: 5,
     maxPasswordLength: 128,
   },
+  user: {
+    additionalFields: {
+      role: {
+        type: "string",
+        required: true,
+        defaultValue: "patient",
+        input: false,
+      },
+    },
+  },
   advanced: {
     cookiePrefix: "medinexa",
     defaultCookieAttributes: {
