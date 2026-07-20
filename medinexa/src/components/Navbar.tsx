@@ -142,7 +142,7 @@ export default function Navbar() {
 
               {/* Login Button */}
               <a 
-                href="#login" 
+                href="/login" 
                 className="text-sm font-bold text-body hover:text-primary transition-colors px-3 py-2"
               >
                 Login
@@ -150,7 +150,7 @@ export default function Navbar() {
 
               {/* Get Started Button */}
               <motion.a
-                href="#get-started"
+                href="/register"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 className="relative inline-flex items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-primary to-blue-500 px-5 py-2.5 text-sm font-bold text-white shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 transition-all cursor-pointer overflow-hidden group"
@@ -237,14 +237,14 @@ export default function Navbar() {
               {/* Action Buttons */}
               <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border/60 dark:border-slate-700/60">
                 <a 
-                  href="#login" 
+                  href="/login" 
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="flex h-11 items-center justify-center rounded-xl border border-border bg-transparent text-sm font-bold text-heading hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors"
                 >
                   Login
                 </a>
                 <a 
-                  href="#get-started" 
+                  href="/register" 
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="flex h-11 items-center justify-center rounded-xl bg-primary text-sm font-bold text-white hover:bg-primary/95 transition-all shadow-sm shadow-primary/20"
                 >

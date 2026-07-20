@@ -15,11 +15,11 @@ export default function AppointmentCTA() {
   // Slow drift animations for individual layered cards
   const cardFloat = (delay: number) => ({
     animate: {
-      y: [0, -8, 0],
+      y: [0, -8, 0] as number[],
       transition: {
         duration: 6,
         repeat: Infinity,
-        ease: 'easeInOut',
+        ease: "easeInOut" as const,
         delay: delay
       }
     }

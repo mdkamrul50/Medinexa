@@ -12,27 +12,26 @@ export default function Footer() {
   };
 
   return (
-    <footer className="relative bg-slate-950 text-slate-400 pt-24 pb-12 border-t border-slate-900 overflow-hidden">
-      
+    <footer className="relative bg-slate-950 text-slate-400 pt-40 pb-12 border-t border-slate-900 overflow-hidden">
+
       {/* Decorative Glow Blobs */}
       <div className="absolute top-0 left-1/4 w-80 h-80 rounded-full bg-primary/5 blur-3xl -z-10 pointer-events-none" />
       <div className="absolute bottom-0 right-1/4 w-80 h-80 rounded-full bg-secondary/5 blur-3xl -z-10 pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        
-        {/* =========================================================
-            1. Newsletter Subscription Card (In-flow layout)
-            ========================================================= */}
+      {/* =========================================================
+          1. Newsletter Subscription Card (Overlaying FAQ/Footer transition)
+          ========================================================= */}
+      <div className="absolute top-0 left-0 right-0 -translate-y-1/2 z-25 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="relative rounded-[2.5rem] bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 border border-slate-800 backdrop-blur-xl p-8 md:p-12 shadow-2xl overflow-hidden mb-20"
+          className="relative rounded-[2.5rem] bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 border border-slate-800 backdrop-blur-xl p-8 md:p-12 shadow-2xl overflow-hidden"
         >
           <div className="absolute top-0 right-0 w-48 h-48 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-secondary/5 rounded-full blur-3xl pointer-events-none" />
-          
+
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
             <div className="lg:col-span-7 text-left">
               <span className="text-xs font-bold text-primary tracking-widest uppercase mb-2 block">
@@ -45,17 +44,17 @@ export default function Footer() {
                 Get medical updates, clinical insights, and health advice delivered straight to your inbox.
               </p>
             </div>
-            
+
             <div className="lg:col-span-5 w-full">
               <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3">
-                <input 
-                  type="email" 
+                <input
+                  type="email"
                   placeholder="Enter your email address"
                   className="flex-1 px-4.5 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 outline-none focus:border-primary/50 text-sm font-semibold transition-colors"
                   required
                 />
-                <motion.button 
-                  type="submit" 
+                <motion.button
+                  type="submit"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   className="px-6 py-3 rounded-xl bg-primary hover:bg-primary/95 text-white font-bold text-sm shadow-md shadow-primary/20 transition-all shrink-0 cursor-pointer flex items-center justify-center gap-1.5"
@@ -67,12 +66,15 @@ export default function Footer() {
             </div>
           </div>
         </motion.div>
-        
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+
         {/* =========================================================
             2. Main Footer Columns Grid
             ========================================================= */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 pb-16 border-b border-slate-900 text-left">
-          
+
           {/* Brand/Logo Column */}
           <div className="lg:col-span-4 flex flex-col items-start space-y-6">
             <a href="#home" className="flex items-center gap-2.5 group">
@@ -83,7 +85,7 @@ export default function Footer() {
                 Medinexa<span className="text-secondary font-black">.</span>
               </span>
             </a>
-            
+
             <p className="text-sm font-medium text-slate-400 max-w-sm leading-relaxed">
               Next-gen operations unified for modern clinics. Streamlining patient diagnostics, admissions, and appointment routing with bank-grade safety.
             </p>
@@ -119,7 +121,7 @@ export default function Footer() {
             <ul className="space-y-3">
               {['Home', 'About', 'Services', 'Doctors', 'Contact'].map((link) => (
                 <li key={link}>
-                  <a 
+                  <a
                     href={`#${link.toLowerCase()}`}
                     className="text-sm font-semibold text-slate-400 hover:text-white transition-colors duration-200"
                   >
@@ -142,8 +144,8 @@ export default function Footer() {
                 'Medical Records'
               ].map((service) => (
                 <li key={service}>
-                  <a 
-                    href="#services" 
+                  <a
+                    href="#services"
                     className="text-sm font-semibold text-slate-400 hover:text-white transition-colors duration-200"
                   >
                     {service}
@@ -165,8 +167,8 @@ export default function Footer() {
                 'FAQ'
               ].map((support) => (
                 <li key={support}>
-                  <a 
-                    href="#support" 
+                  <a
+                    href="#support"
                     className="text-sm font-semibold text-slate-400 hover:text-white transition-colors duration-200"
                   >
                     {support}
@@ -216,7 +218,7 @@ export default function Footer() {
             <a href="#terms" className="hover:text-slate-400 transition-colors">Terms of Service</a>
             <a href="#cookies" className="hover:text-slate-400 transition-colors">Cookie Settings</a>
           </div>
-          
+
           <div className="flex items-center gap-1 text-[11px]">
             <span>Made with</span>
             <span className="text-red-500 animate-pulse">❤️</span>
