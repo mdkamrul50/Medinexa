@@ -1,88 +1,259 @@
 "use client";
 
-import { FiCalendar, FiUserPlus, FiDollarSign, FiUsers } from "react-icons/fi";
+import { useMemo } from "react";
+import {
+  FiCalendar,
+  FiUserPlus,
+  FiDollarSign,
+  FiUsers,
+  FiClock,
+  FiList,
+  FiSearch,
+  FiFileText,
+} from "react-icons/fi";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import PageContainer from "@/components/dashboard/PageContainer";
 import RoleGuard from "@/components/auth/RoleGuard";
+import StatCard from "@/components/dashboard/StatCard";
+import WelcomeBanner from "@/components/dashboard/WelcomeBanner";
+import DashboardSection from "@/components/dashboard/DashboardSection";
+import DataTable from "@/components/dashboard/DataTable";
+import QuickActionCard from "@/components/dashboard/QuickActionCard";
+import StaggerContainer from "@/components/dashboard/StaggerContainer";
 import { useUser } from "@/hooks/useUser";
+import { useReceptionistDashboard } from "@/hooks/useDashboardData";
+import type { QueueItem, AppointmentItem, RegistrationItem, BillingItem } from "@/hooks/useDashboardData";
+import type { UserRole } from "@/lib/auth-utils";
+
+const queueStatusColor: Record<string, string> = {
+  waiting: "bg-blue-500/10 text-blue-500",
+  "with-doctor": "bg-amber-500/10 text-amber-500",
+  completed: "bg-emerald-500/10 text-emerald-500",
+};
+
+function QueueRow({ item }: { item: QueueItem }) {
+  return (
+    <>
+      <div className="flex items-center gap-3 min-w-0 flex-1">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary text-sm font-bold">
+          {item.token}
+        </div>
+        <div className="min-w-0">
+          <p className="text-sm font-semibold text-heading truncate">{item.patient}</p>
+          <p className="text-xs text-muted">{item.doctor} • {item.department}</p>
+        </div>
+      </div>
+      <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full capitalize ${queueStatusColor[item.status] ?? ""}`}>
+        {item.status === "with-doctor" ? "With Doctor" : item.status}
+      </span>
+    </>
+  );
+}
+
+function AppointmentRow({ item }: { item: AppointmentItem }) {
+  return (
+    <>
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-semibold text-heading truncate">{item.patient}</p>
+        <p className="text-xs text-muted">{item.doctor ?? item.type}</p>
+      </div>
+      <span className="text-sm font-medium text-primary">{item.time}</span>
+      <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full capitalize ${
+        item.status === "scheduled" ? "bg-blue-500/10 text-blue-500" :
+        item.status === "checked-in" ? "bg-amber-500/10 text-amber-500" :
+        item.status === "completed" ? "bg-emerald-500/10 text-emerald-500" :
+        "bg-red-500/10 text-red-500"
+      }`}>
+        {item.status === "checked-in" ? "Checked In" : item.status}
+      </span>
+    </>
+  );
+}
+
+function RegistrationRow({ item }: { item: RegistrationItem }) {
+  return (
+    <>
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-semibold text-heading truncate">{item.name}</p>
+        <p className="text-xs text-muted">{item.email}</p>
+      </div>
+      <span className="text-xs text-muted">{item.date}</span>
+    </>
+  );
+}
+
+function BillingRow({ item }: { item: BillingItem }) {
+  return (
+    <>
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-semibold text-heading truncate">{item.patient}</p>
+        <p className="text-xs text-muted">{item.description}</p>
+      </div>
+      <div className="text-right">
+        <p className="text-sm font-bold text-heading">${item.amount.toLocaleString()}</p>
+        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full capitalize ${
+          item.status === "paid" ? "bg-emerald-500/10 text-emerald-500" :
+          item.status === "pending" ? "bg-amber-500/10 text-amber-500" :
+          "bg-red-500/10 text-red-500"
+        }`}>
+          {item.status}
+        </span>
+      </div>
+    </>
+  );
+}
 
 export default function ReceptionistDashboardPage() {
   const { user } = useUser();
+  const { data, loading } = useReceptionistDashboard();
+
+  const firstName = user?.name?.split(" ")[0] ?? "Receptionist";
+
+  const quickActions = useMemo(
+    () => [
+      { label: "New Patient", icon: FiUserPlus, color: "from-blue-500 to-primary", href: "/dashboard/patients" },
+      { label: "Schedule Appointment", icon: FiCalendar, color: "from-teal-500 to-secondary", href: "/dashboard/appointments" },
+      { label: "Process Payment", icon: FiDollarSign, color: "from-amber-500 to-accent", href: "/dashboard/billing" },
+      { label: "Patient Lookup", icon: FiSearch, color: "from-violet-500 to-purple-500", href: "/dashboard/patients" },
+    ],
+    []
+  );
+
+  const statsData = useMemo(() => [
+    {
+      label: "In Queue",
+      value: data?.queue?.length ?? 0,
+      icon: FiList,
+      color: "from-blue-500 to-primary",
+    },
+    {
+      label: "Walk-in Today",
+      value: data?.newRegistrations?.length ?? 0,
+      icon: FiUserPlus,
+      color: "from-teal-500 to-secondary",
+    },
+    {
+      label: "Scheduled",
+      value: data?.scheduledAppointments?.length ?? 0,
+      icon: FiCalendar,
+      color: "from-amber-500 to-accent",
+    },
+    {
+      label: "Pending Billing",
+      value: data?.pendingBilling?.filter((b) => b.status === "pending" || b.status === "overdue").length ?? 0,
+      icon: FiDollarSign,
+      color: "from-violet-500 to-purple-500",
+    },
+  ], [data]);
 
   return (
     <RoleGuard roles={["receptionist"]}>
       <DashboardLayout>
         <PageContainer
           title="Reception Dashboard"
-          subtitle={`Welcome back, ${user?.name?.split(" ")[0] ?? "Receptionist"}. Manage appointments and patients.`}
+          subtitle={`Manage appointments, patients, and front desk operations.`}
           breadcrumbs={[{ label: "Dashboard" }]}
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { label: "Today's Appointments", value: "24", icon: FiCalendar, color: "from-blue-500 to-primary" },
-              { label: "New Registrations", value: "8", icon: FiUserPlus, color: "from-teal-500 to-secondary" },
-              { label: "Pending Check-ins", value: "5", icon: FiUsers, color: "from-amber-500 to-accent" },
-              { label: "Today's Revenue", value: "$8,240", icon: FiDollarSign, color: "from-violet-500 to-purple-500" },
-            ].map((stat, i) => (
-              <div key={i} className="group relative rounded-2xl border border-border bg-card p-6 hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20 transition-all duration-300">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className={`flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br ${stat.color} text-white`}>
-                    <stat.icon className="h-5 w-5" />
-                  </div>
-                </div>
-                <p className="text-sm font-semibold text-muted">{stat.label}</p>
-                <p className="text-3xl font-extrabold text-heading tracking-tight mt-1">{stat.value}</p>
-              </div>
-            ))}
-          </div>
+          <StaggerContainer className="space-y-6">
+            <WelcomeBanner
+              name={user?.name ?? "Receptionist"}
+              role={(user?.role as UserRole) ?? "receptionist"}
+              icon={FiUsers}
+              title={`Welcome back, ${firstName}`}
+              description="Manage appointments, patient registrations, and front desk operations."
+            />
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-            <div className="rounded-2xl border border-border bg-card p-6">
-              <h3 className="text-base font-bold text-heading mb-4">Today's Schedule</h3>
-              <div className="space-y-3">
-                {[
-                  { patient: "John Doe", time: "9:00 AM", doctor: "Dr. Wilson", status: "Checked in" },
-                  { patient: "Jane Smith", time: "10:30 AM", doctor: "Dr. Chen", status: "Waiting" },
-                  { patient: "Bob Johnson", time: "11:00 AM", doctor: "Dr. Davis", status: "Scheduled" },
-                  { patient: "Alice Brown", time: "1:00 PM", doctor: "Dr. Wilson", status: "Scheduled" },
-                ].map((apt, i) => (
-                  <div key={i} className="flex items-center justify-between rounded-xl bg-slate-50 dark:bg-slate-800/30 px-4 py-3">
-                    <div>
-                      <p className="text-sm font-semibold text-heading">{apt.patient}</p>
-                      <p className="text-xs text-muted">{apt.doctor}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-medium text-primary">{apt.time}</p>
-                      <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                        apt.status === "Checked in" ? "bg-emerald-500/10 text-emerald-500" :
-                        apt.status === "Waiting" ? "bg-amber-500/10 text-amber-500" :
-                        "bg-blue-500/10 text-blue-500"
-                      }`}>{apt.status}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {statsData.map((stat) => (
+                <StatCard
+                  key={stat.label}
+                  label={stat.label}
+                  value={stat.value}
+                  icon={stat.icon}
+                  color={stat.color}
+                  loading={loading}
+                />
+              ))}
             </div>
 
-            <div className="rounded-2xl border border-border bg-card p-6">
-              <h3 className="text-base font-bold text-heading mb-4">Quick Actions</h3>
-              <div className="grid grid-cols-2 gap-3">
-                {[
-                  { label: "New Patient", icon: FiUserPlus, color: "from-blue-500 to-primary" },
-                  { label: "Schedule Appointment", icon: FiCalendar, color: "from-teal-500 to-secondary" },
-                  { label: "Process Payment", icon: FiDollarSign, color: "from-amber-500 to-accent" },
-                  { label: "Patient Lookup", icon: FiUsers, color: "from-violet-500 to-purple-500" },
-                ].map((action, i) => (
-                  <button key={i} className="flex flex-col items-center justify-center gap-2 rounded-xl border border-border bg-slate-50 dark:bg-slate-800/20 p-4 hover:bg-slate-100 dark:hover:bg-slate-800/40 hover:border-primary/30 transition-all cursor-pointer">
-                    <div className={`flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br ${action.color} text-white`}>
-                      <action.icon className="h-5 w-5" />
-                    </div>
-                    <span className="text-xs font-semibold text-heading text-center">{action.label}</span>
-                  </button>
-                ))}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <DashboardSection
+                title="Today's Queue"
+                subtitle={loading ? "" : `${data?.queue?.length ?? 0} patients in queue`}
+              >
+                <DataTable
+                  columns={[
+                    { key: "info", header: "", render: (item: QueueItem) => <QueueRow item={item} />, className: "flex items-center gap-3 w-full" },
+                  ]}
+                  data={data?.queue ?? []}
+                  loading={loading}
+                  keyExtractor={(item) => item.id}
+                  emptyTitle="Queue is empty"
+                  emptyDescription="No patients are currently waiting."
+                />
+              </DashboardSection>
+
+              <DashboardSection
+                title="Scheduled Appointments"
+                subtitle={loading ? "" : `${data?.scheduledAppointments?.length ?? 0} today`}
+              >
+                <DataTable
+                  columns={[
+                    { key: "info", header: "", render: (item: AppointmentItem) => <AppointmentRow item={item} />, className: "flex items-center gap-3 w-full" },
+                  ]}
+                  data={data?.scheduledAppointments ?? []}
+                  loading={loading}
+                  keyExtractor={(item) => item.id}
+                  emptyTitle="No appointments scheduled"
+                  emptyDescription="Today's appointments will appear here."
+                />
+              </DashboardSection>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div>
+                <DashboardSection
+                  title="New Registrations"
+                  subtitle={loading ? "" : `${data?.newRegistrations?.length ?? 0} today`}
+                >
+                  <DataTable
+                    columns={[
+                      { key: "info", header: "", render: (item: RegistrationItem) => <RegistrationRow item={item} />, className: "flex items-center gap-3 w-full" },
+                    ]}
+                    data={data?.newRegistrations ?? []}
+                    loading={loading}
+                    keyExtractor={(item) => item.id}
+                    emptyTitle="No new registrations"
+                    emptyDescription="New patient registrations will appear here."
+                  />
+                </DashboardSection>
+              </div>
+
+              <div>
+                <DashboardSection
+                  title="Pending Billing"
+                  subtitle={loading ? "" : `${data?.pendingBilling?.filter((b) => b.status === "pending" || b.status === "overdue").length ?? 0} pending`}
+                >
+                  <DataTable
+                    columns={[
+                      { key: "info", header: "", render: (item: BillingItem) => <BillingRow item={item} />, className: "flex items-center gap-3 w-full" },
+                    ]}
+                    data={data?.pendingBilling ?? []}
+                    loading={loading}
+                    keyExtractor={(item) => item.id}
+                    emptyTitle="No pending billing"
+                    emptyDescription="All bills are settled."
+                  />
+                </DashboardSection>
+              </div>
+
+              <div>
+                <DashboardSection title="Quick Actions">
+                  <QuickActionCard actions={quickActions} />
+                </DashboardSection>
               </div>
             </div>
-          </div>
+          </StaggerContainer>
         </PageContainer>
       </DashboardLayout>
     </RoleGuard>

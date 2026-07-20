@@ -9,4 +9,28 @@ export const authClient = createAuthClient({
   fetchOptions: {
     credentials: "include",
   },
+  $InferAuth: {
+    user: {
+      additionalFields: {
+        role: {
+          type: "string",
+          required: true,
+          defaultValue: "patient",
+          input: false,
+        },
+        phone: {
+          type: "string",
+          required: false,
+          defaultValue: "",
+          input: true,
+        },
+        address: {
+          type: "string",
+          required: false,
+          defaultValue: "",
+          input: true,
+        },
+      },
+    },
+  },
 });

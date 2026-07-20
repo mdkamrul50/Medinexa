@@ -13,7 +13,7 @@ interface RoleGuardProps {
 
 export default function RoleGuard({ children, roles, fallback }: RoleGuardProps) {
   const router = useRouter();
-  const { user, isPending, isAuthenticated } = useUser();
+  const { role, isPending, isAuthenticated } = useUser();
 
   useEffect(() => {
     if (isPending) return;
@@ -21,13 +21,13 @@ export default function RoleGuard({ children, roles, fallback }: RoleGuardProps)
       router.replace("/login");
       return;
     }
-    if (roles && user?.role) {
-      const hasAccess = roles.includes(user.role as UserRole);
+    if (roles && role) {
+      const hasAccess = roles.includes(role);
       if (!hasAccess) {
         router.replace("/forbidden");
       }
     }
-  }, [isPending, isAuthenticated, user?.role, roles, router]);
+  }, [isPending, isAuthenticated, role, roles, router]);
 
   if (isPending) {
     return (
@@ -48,7 +48,7 @@ export default function RoleGuard({ children, roles, fallback }: RoleGuardProps)
     );
   }
 
-  if (roles && user?.role && !roles.includes(user.role as UserRole)) {
+  if (roles && role && !roles.includes(role)) {
     return fallback ?? (
       <div className="flex h-screen items-center justify-center bg-background">
         <p className="text-sm text-muted">Redirecting...</p>

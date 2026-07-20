@@ -1,6 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import { ObjectId } from "mongodb";
 import { toNodeHandler, fromNodeHeaders } from "better-auth/node";
 import { auth } from "./auth.js";
 import { getDB } from "./db.js";
@@ -106,6 +107,44 @@ app.patch("/api/users/role", async (req, res) => {
     res.json({ message: "Role updated successfully" });
   } catch (error) {
     res.status(500).json({ message: "Failed to update role" });
+  }
+});
+
+app.patch("/api/users/profile", async (req, res) => {
+  try {
+    const session = await auth.api.getSession({ headers: fromNodeHeaders(req.headers) });
+    if (!session) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    const { name, phone, address } = req.body;
+    if (!name && phone === undefined && address === undefined) {
+      res.status(400).json({ message: "At least one field is required" });
+      return;
+    }
+
+    const db = await getDB();
+    const updateData: Record<string, unknown> = {};
+    if (name) updateData.name = name;
+    if (phone !== undefined) updateData.phone = phone;
+    if (address !== undefined) updateData.address = address;
+
+    const userId = new ObjectId(session.user.id);
+
+    await db.collection("users").updateOne(
+      { _id: userId },
+      { $set: updateData }
+    );
+
+    const updated = await db.collection("users").findOne(
+      { _id: userId },
+      { projection: { _id: 0, name: 1, email: 1, phone: 1, address: 1, role: 1, image: 1, createdAt: 1, updatedAt: 1 } }
+    );
+
+    res.json({ user: updated });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to update profile" });
   }
 });
 

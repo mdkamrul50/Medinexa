@@ -12,6 +12,7 @@ import {
 } from "react-icons/fi";
 import { authClient } from "@/lib/auth-client";
 import { useUser } from "@/hooks/useUser";
+import { getRoleBadgeColor } from "@/lib/auth-utils";
 
 export default function UserDropdown() {
   const router = useRouter();
@@ -88,19 +89,24 @@ export default function UserDropdown() {
             className="absolute right-0 top-full mt-2 w-[240px] origin-top-right"
           >
             <div className="rounded-2xl border border-border bg-card shadow-xl shadow-black/5 dark:shadow-black/20 overflow-hidden">
-              <div className="flex items-center gap-3 px-4 py-3.5 border-b border-border">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-blue-500 text-sm font-bold text-white shadow-sm overflow-hidden">
-                  {displayImage ? (
-                    <img src={displayImage} alt="" className="h-full w-full object-cover" />
-                  ) : (
-                    initials
-                  )}
+                <div className="flex items-center gap-3 px-4 py-3.5 border-b border-border">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-blue-500 text-sm font-bold text-white shadow-sm overflow-hidden">
+                    {displayImage ? (
+                      <img src={displayImage} alt="" className="h-full w-full object-cover" />
+                    ) : (
+                      initials
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-bold text-heading truncate">{displayName}</p>
+                    <p className="text-xs text-muted truncate">{displayEmail}</p>
+                    {role && (
+                      <span className={`inline-block mt-1 text-[10px] font-semibold px-2 py-0.5 rounded-full capitalize ${getRoleBadgeColor(role)}`}>
+                        {role}
+                      </span>
+                    )}
+                  </div>
                 </div>
-                <div className="min-w-0">
-                  <p className="text-sm font-bold text-heading truncate">{displayName}</p>
-                  <p className="text-xs text-muted truncate">{displayEmail}</p>
-                </div>
-              </div>
 
               <div className="p-1.5">
                 {[

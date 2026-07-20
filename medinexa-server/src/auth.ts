@@ -23,6 +23,18 @@ export const auth = betterAuth({
         defaultValue: "patient",
         input: false,
       },
+      phone: {
+        type: "string",
+        required: false,
+        defaultValue: "",
+        input: true,
+      },
+      address: {
+        type: "string",
+        required: false,
+        defaultValue: "",
+        input: true,
+      },
     },
   },
   advanced: {
