@@ -1,9 +1,16 @@
 import { MongoClient, Db } from "mongodb";
 import dns from "dns";
 
-dns.setServers(["8.8.8.8", "1.1.1.1"]);
+const DNS_SERVERS = process.env.DNS_SERVERS;
+if (DNS_SERVERS) {
+  dns.setServers(DNS_SERVERS.split(","));
+}
 
-const MONGODB_URI = process.env.MONGODB_URI!;
+const MONGODB_URI = process.env.MONGODB_URI;
+if (!MONGODB_URI) {
+  throw new Error("MONGODB_URI environment variable is required");
+}
+const MONGO_URI: string = MONGODB_URI;
 
 let client: MongoClient;
 let db: Db;
@@ -14,7 +21,7 @@ export async function connectDB(): Promise<{ client: MongoClient; db: Db }> {
 
   if (!promise) {
     promise = (async () => {
-      client = new MongoClient(MONGODB_URI);
+      client = new MongoClient(MONGO_URI);
       await client.connect();
       db = client.db();
     })();

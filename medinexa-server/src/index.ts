@@ -6,6 +6,16 @@ import { toNodeHandler, fromNodeHeaders } from "better-auth/node";
 import { auth } from "./auth.js";
 import { getDB } from "./db.js";
 
+const REQUIRED_ENV_VARS = ["MONGODB_URI", "BETTER_AUTH_SECRET", "BETTER_AUTH_URL"] as const;
+const missing: string[] = [];
+for (const key of REQUIRED_ENV_VARS) {
+  if (!process.env[key]) missing.push(key);
+}
+if (missing.length > 0) {
+  console.error(`Missing required environment variables: ${missing.join(", ")}`);
+  process.exit(1);
+}
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:3000";
