@@ -102,6 +102,9 @@ export default function RegisterForm() {
       name: `${firstName} ${lastName}`.trim(),
       email,
       password,
+      fetchOptions: {
+        body: { phone },
+      },
     });
 
     if (signUpError) {

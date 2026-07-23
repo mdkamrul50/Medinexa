@@ -1,44 +1,79 @@
 import { MongoClient, Db } from "mongodb";
-import dns from "dns";
-
-dns.setServers(["8.8.8.8", "8.8.4.4"]);
 
 const RAW_URI: string = process.env.MONGODB_URI ?? "";
 if (!RAW_URI) {
   throw new Error("MONGODB_URI environment variable is required");
 }
 
-async function buildDirectURI(rawURI: string): Promise<string> {
-  const srvMatch = rawURI.match(/^mongodb\+srv:\/\/(.+@)?([^\/\?]+)(\/[^?]*)?(\?.*)?$/);
+interface SRVRecord {
+  name: string;
+  port: number;
+  priority: number;
+  weight: number;
+}
+
+async function resolveSRVDoh(hostname: string): Promise<SRVRecord[]> {
+  const url = `https://dns.google/resolve?name=_mongodb._tcp.${hostname}&type=SRV`;
+  const res = await fetch(url);
+  const data = await res.json() as { Answer?: { name: string; data: string; type: number }[] };
+  const answers = data.Answer?.filter((a) => a.type === 33) ?? [];
+  return answers.map((a) => {
+    const parts = a.data.split(" ");
+    return {
+      priority: parseInt(parts[0], 10),
+      weight: parseInt(parts[1], 10),
+      port: parseInt(parts[2], 10),
+      name: parts[3].replace(/\.$/, ""),
+    };
+  });
+}
+
+async function resolveTXTDoh(hostname: string): Promise<string[]> {
+  const url = `https://dns.google/resolve?name=${hostname}&type=TXT`;
+  const res = await fetch(url);
+  const data = await res.json() as { Answer?: { data: string; type: number }[] };
+  const answers = data.Answer?.filter((a) => a.type === 16) ?? [];
+  return answers.map((a) => a.data.replace(/"/g, ""));
+}
+
+async function resolveSRV(rawURI: string): Promise<string> {
+  const srvMatch = rawURI.match(
+    /^mongodb\+srv:\/\/(?:([^@]+)@)?([^/?]+)(\/[^?]*)?(\?.*)?$/
+  );
   if (!srvMatch) return rawURI;
 
-  const creds = srvMatch[1] || "";
+  const credentials = srvMatch[1] || "";
   const host = srvMatch[2];
   const dbPath = srvMatch[3] || "";
   const query = srvMatch[4] || "";
 
   const [srvRecords, txtRecords] = await Promise.all([
-    dns.promises.resolveSrv(`_mongodb._tcp.${host}`),
-    dns.promises.resolveTxt(host).catch(() => [] as string[][]),
+    resolveSRVDoh(host),
+    resolveTXTDoh(host).catch(() => []),
   ]);
+
+  if (srvRecords.length === 0) {
+    throw new Error(`No SRV records found for _mongodb._tcp.${host}`);
+  }
 
   const hosts = srvRecords
     .sort((a, b) => a.priority - b.priority)
     .map((r) => `${r.name}:${r.port}`)
     .join(",");
 
-  const txtExtra = txtRecords.flat().join("&");
+  const txtParams = txtRecords.flat().join("&");
+  const separator = query ? "&" : "?";
 
-  return `mongodb://${creds}${hosts}${dbPath}${query}${query ? "&" : "?"}tls=true${txtExtra ? `&${txtExtra}` : ""}`;
+  return `mongodb://${credentials ? credentials + "@" : ""}${hosts}${dbPath}${query}${separator}tls=true${txtParams ? "&" + txtParams : ""}`;
 }
 
-let _directURI: string | null = null;
+let _resolvedURI: string | null = null;
 
-async function getDirectURI(): Promise<string> {
-  if (!_directURI) {
-    _directURI = await buildDirectURI(RAW_URI);
+async function getResolvedURI(): Promise<string> {
+  if (!_resolvedURI) {
+    _resolvedURI = await resolveSRV(RAW_URI);
   }
-  return _directURI;
+  return _resolvedURI;
 }
 
 const globalForMongo = globalThis as unknown as {
@@ -76,7 +111,7 @@ export async function connectDB(): Promise<{ client: MongoClient; db: Db }> {
 
   if (!globalForMongo._mongoPromise) {
     globalForMongo._mongoPromise = (async () => {
-      const uri = await getDirectURI();
+      const uri = await getResolvedURI();
       const client = new MongoClient(uri, {
         maxPoolSize: 10,
         minPoolSize: 0,

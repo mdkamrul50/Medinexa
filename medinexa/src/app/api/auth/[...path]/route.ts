@@ -3,8 +3,16 @@ import { getAuth } from "@/lib/server/auth";
 import { rateLimit, getRateLimitHeaders, getClientIp } from "@/lib/server/rate-limit";
 
 async function handle(request: Request) {
-  const auth = await getAuth();
-  return auth.handler(request);
+  try {
+    const auth = await getAuth();
+    return await auth.handler(request);
+  } catch (err) {
+    console.error("[AUTH ERROR]", err);
+    return NextResponse.json(
+      { message: "Internal server error", error: err instanceof Error ? err.message : "Unknown" },
+      { status: 500 }
+    );
+  }
 }
 
 export async function GET(request: Request) { return handle(request); }
