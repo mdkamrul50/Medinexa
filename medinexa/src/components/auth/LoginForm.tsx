@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { FiMail, FiLock, FiEye, FiEyeOff, FiArrowRight, FiActivity, FiAlertCircle, FiLoader } from 'react-icons/fi';
 import { FaApple, FaFacebook } from 'react-icons/fa';
@@ -46,6 +46,7 @@ const cardVariants = {
 
 export default function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -53,6 +54,14 @@ export default function LoginForm() {
   const [focusedField, setFocusedField] = useState<'email' | 'password' | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [redirectTo, setRedirectTo] = useState('/dashboard');
+
+  useEffect(() => {
+    const redirect = searchParams.get('redirect');
+    if (redirect && redirect.startsWith('/')) {
+      setRedirectTo(redirect);
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,12 +75,13 @@ export default function LoginForm() {
     });
 
     if (signInError) {
-      setError(signInError.message || signInError.statusText || 'Invalid email or password');
+      setError(signInError.message ?? 'Invalid email or password');
       setIsLoading(false);
       return;
     }
 
-    router.push('/dashboard');
+    setIsLoading(false);
+    router.push(redirectTo);
   };
 
   return (

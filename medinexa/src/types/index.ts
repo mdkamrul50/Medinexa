@@ -5,18 +5,18 @@ export type AuthSession = {
     email: string;
     emailVerified: boolean;
     image?: string | null;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: string;
+    updatedAt: string;
     role: string;
     phone: string;
     address: string;
   };
   session: {
     id: string;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: string;
+    updatedAt: string;
     userId: string;
-    expiresAt: Date;
+    expiresAt: string;
     token: string;
     ipAddress?: string;
     userAgent?: string;

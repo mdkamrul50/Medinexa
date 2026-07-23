@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { FiUser, FiMail, FiLock, FiEye, FiEyeOff, FiArrowRight, FiActivity, FiPhone, FiAlertCircle, FiLoader } from 'react-icons/fi';
+import { FiUser, FiMail, FiLock, FiEye, FiEyeOff, FiArrowRight, FiActivity, FiPhone, FiAlertCircle, FiLoader, FiCheck } from 'react-icons/fi';
 import { FaApple, FaFacebook } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import { authClient } from '@/lib/auth-client';
@@ -54,6 +54,7 @@ const strengthConfig = [
 
 export default function RegisterForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -66,6 +67,15 @@ export default function RegisterForm() {
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [redirectTo, setRedirectTo] = useState('/dashboard');
+
+  useEffect(() => {
+    const redirect = searchParams.get('redirect');
+    if (redirect && redirect.startsWith('/')) {
+      setRedirectTo(redirect);
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -105,12 +115,16 @@ export default function RegisterForm() {
     });
 
     if (signUpError) {
-      setError(signUpError.message || signUpError.statusText || 'Registration failed');
+      setError(signUpError.message ?? 'Registration failed');
       setIsLoading(false);
       return;
     }
 
-    router.push('/dashboard');
+    setIsLoading(false);
+    setSuccess('Account created successfully!');
+    setTimeout(() => {
+      router.push(redirectTo);
+    }, 500);
   };
 
   const getPasswordStrength = () => {
@@ -367,6 +381,17 @@ export default function RegisterForm() {
               </span>
             </label>
           </motion.div>
+
+          {success && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex items-center gap-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 px-4 py-3"
+            >
+              <FiCheck className="h-4.5 w-4.5 text-emerald-500 shrink-0" />
+              <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400">{success}</p>
+            </motion.div>
+          )}
 
           {error && (
             <motion.div
