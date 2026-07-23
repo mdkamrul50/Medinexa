@@ -76,7 +76,7 @@ export default function PatientDetailsPage({
   }, [role, patient, user, router]);
 
   useEffect(() => {
-    if (role === "doctor" && patient && patient.assignedDoctor !== user?.name && patient.assignedDoctor !== user?.id) {
+    if (role === "doctor" && patient && patient.assignedDoctor !== user?.id) {
       router.replace("/forbidden");
     }
   }, [role, patient, user, router]);
@@ -225,7 +225,7 @@ export default function PatientDetailsPage({
                   <InfoRow icon={FiMaximize} label="Height" value={patient.height} />
                   <InfoRow icon={FiHeart} label="Weight" value={patient.weight} />
                   <InfoRow icon={FiPhoneCall} label="Emergency Contact" value={patient.emergencyContact} />
-                  <InfoRow icon={FiUserCheck} label="Assigned Doctor" value={patient.assignedDoctor} />
+                  <InfoRow icon={FiUserCheck} label="Assigned Doctor" value={patient.assignedDoctorName || patient.assignedDoctor || "Unassigned"} />
                 </div>
               </DashboardSection>
             </div>

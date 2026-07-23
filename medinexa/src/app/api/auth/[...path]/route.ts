@@ -1,4 +1,6 @@
+import { NextResponse } from "next/server";
 import { getAuth } from "@/lib/server/auth";
+import { rateLimit, getRateLimitHeaders, getClientIp } from "@/lib/server/rate-limit";
 
 async function handle(request: Request) {
   const auth = await getAuth();
@@ -6,7 +8,25 @@ async function handle(request: Request) {
 }
 
 export async function GET(request: Request) { return handle(request); }
-export async function POST(request: Request) { return handle(request); }
+
+export async function POST(request: Request) {
+  const ip = getClientIp(request);
+  const url = new URL(request.url);
+  const isAuthAction = url.pathname.includes("/sign-in") || url.pathname.includes("/sign-up");
+
+  if (isAuthAction) {
+    const result = rateLimit(`auth:${ip}`, 10, 60_000);
+    if (!result.allowed) {
+      return NextResponse.json(
+        { message: "Too many attempts. Please try again later." },
+        { status: 429, headers: getRateLimitHeaders(result, 10) }
+      );
+    }
+  }
+
+  return handle(request);
+}
+
 export async function PUT(request: Request) { return handle(request); }
 export async function PATCH(request: Request) { return handle(request); }
 export async function DELETE(request: Request) { return handle(request); }

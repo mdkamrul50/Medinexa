@@ -47,6 +47,30 @@ const globalForMongo = globalThis as unknown as {
   _mongoPromise?: Promise<void>;
 };
 
+async function ensureIndexes(db: Db) {
+  await Promise.all([
+    db.collection("doctors").createIndexes([
+      { key: { department: 1, status: 1 } },
+      { key: { createdAt: -1 } },
+      { key: { rating: -1 } },
+      { key: { userId: 1 } },
+    ]),
+    db.collection("patients").createIndexes([
+      { key: { userId: 1 } },
+      { key: { assignedDoctor: 1 } },
+      { key: { bloodGroup: 1, status: 1 } },
+      { key: { createdAt: -1 } },
+    ]),
+    db.collection("users").createIndexes([
+      { key: { email: 1 }, unique: true },
+    ]),
+    db.collection("appointments").createIndexes([
+      { key: { date: 1 } },
+      { key: { userId: 1 } },
+    ]),
+  ]);
+}
+
 export async function connectDB(): Promise<{ client: MongoClient; db: Db }> {
   if (globalForMongo._mongoDb) return { client: globalForMongo._mongoClient!, db: globalForMongo._mongoDb };
 
@@ -62,6 +86,7 @@ export async function connectDB(): Promise<{ client: MongoClient; db: Db }> {
       await client.connect();
       globalForMongo._mongoClient = client;
       globalForMongo._mongoDb = client.db();
+      await ensureIndexes(globalForMongo._mongoDb);
     })();
   }
 

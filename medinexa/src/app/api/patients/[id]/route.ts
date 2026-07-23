@@ -2,20 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 import { getSession } from "@/lib/server/auth";
 import { getDB } from "@/lib/server/db";
-
-const PATIENT_UPDATABLE_FIELDS = [
-  "name", "email", "phone", "image", "gender", "dateOfBirth",
-  "bloodGroup", "height", "weight", "emergencyContact", "address",
-  "assignedDoctor", "medicalHistory", "allergies", "currentMedications", "status",
-];
-
-function pickPatientFields(body: Record<string, unknown>) {
-  const picked: Record<string, unknown> = {};
-  for (const key of PATIENT_UPDATABLE_FIELDS) {
-    if (body[key] !== undefined) picked[key] = body[key];
-  }
-  return picked;
-}
+import { pickPatientFields } from "@/lib/server/validation";
 
 export async function GET(
   _request: NextRequest,
@@ -42,7 +29,16 @@ export async function GET(
       return NextResponse.json({ message: "Forbidden" }, { status: 403 });
     }
 
-    return NextResponse.json(patient);
+    let assignedDoctorName: string | null = null;
+    if (patient.assignedDoctor) {
+      const doctor = await db.collection("doctors").findOne(
+        { userId: patient.assignedDoctor },
+        { projection: { name: 1 } }
+      );
+      assignedDoctorName = doctor?.name || "Unknown";
+    }
+
+    return NextResponse.json({ ...patient, assignedDoctorName });
   } catch {
     return NextResponse.json({ message: "Failed to fetch patient" }, { status: 500 });
   }
@@ -75,13 +71,13 @@ export async function PATCH(
       if (!patient) {
         return NextResponse.json({ message: "Patient not found" }, { status: 404 });
       }
-      if (patient.assignedDoctor !== session.user.id && patient.assignedDoctor !== session.user.name) {
+      if (patient.assignedDoctor !== session.user.id) {
         return NextResponse.json({ message: "You can only update your assigned patients" }, { status: 403 });
       }
     }
 
     const body = await request.json();
-    const updateData = { ...pickPatientFields(body), updatedAt: new Date().toISOString() };
+    const updateData = { ...pickPatientFields(body), updatedAt: new Date() };
 
     const result = await db.collection("patients").updateOne(
       { _id: new ObjectId(id) },

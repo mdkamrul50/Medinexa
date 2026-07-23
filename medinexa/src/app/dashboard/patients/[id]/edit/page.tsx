@@ -50,7 +50,7 @@ export default function EditPatientPage({
   });
 
   useEffect(() => {
-    if (role === "doctor" && patient && patient.assignedDoctor !== user?.name && patient.assignedDoctor !== user?.id) {
+    if (role === "doctor" && patient && patient.assignedDoctor !== user?.id) {
       router.replace("/forbidden");
     }
   }, [role, patient, user, router]);
@@ -284,7 +284,7 @@ export default function EditPatientPage({
                     >
                       <option value="">Select a doctor</option>
                       {doctors.map((doc) => (
-                        <option key={doc._id} value={doc.name}>
+                        <option key={doc._id} value={doc.userId}>
                           Dr. {doc.name} — {doc.department || "General"}
                         </option>
                       ))}

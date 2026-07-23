@@ -49,7 +49,7 @@ function PatientRow({
         <p className="text-xs text-muted">{item.gender}</p>
       </div>
       <div className="hidden md:block text-sm text-muted max-w-[120px] truncate">
-        {item.assignedDoctor || "Unassigned"}
+        {item.assignedDoctorName || "Unassigned"}
       </div>
       <div className="hidden lg:block text-sm text-muted">
         {item.phone}

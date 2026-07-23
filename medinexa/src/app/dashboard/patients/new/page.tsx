@@ -235,7 +235,7 @@ export default function AddPatientPage() {
                     >
                       <option value="">Select a doctor</option>
                       {doctors.map((doc) => (
-                        <option key={doc._id} value={doc.name}>
+                        <option key={doc._id} value={doc.userId}>
                           Dr. {doc.name} — {doc.department || "General"}
                         </option>
                       ))}

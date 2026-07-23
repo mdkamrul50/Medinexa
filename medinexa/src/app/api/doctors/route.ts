@@ -2,34 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 import { getAuth, getSession } from "@/lib/server/auth";
 import { getDB } from "@/lib/server/db";
-import { escapeRegex, sanitizeSortField } from "@/lib/server/query-utils";
-
-const DOCTOR_UPDATABLE_FIELDS = [
-  "name", "email", "phone", "image", "gender", "dateOfBirth",
-  "department", "specialization", "qualifications", "experience",
-  "consultationFee", "availableDays", "availableTime", "hospitalBranch",
-  "biography", "status", "rating",
-];
-
-const DOCTOR_SORT_FIELDS = [
-  "name", "email", "createdAt", "updatedAt", "department", "status", "rating",
-];
-
-function pickDoctorFields(body: Record<string, unknown>) {
-  const picked: Record<string, unknown> = {};
-  for (const key of DOCTOR_UPDATABLE_FIELDS) {
-    if (body[key] !== undefined) picked[key] = body[key];
-  }
-  return picked;
-}
-
-function validatePassword(password: unknown): string | null {
-  if (!password || typeof password !== "string") return "Password is required";
-  if (password.length < 5) return "Password must be at least 5 characters";
-  if (!/[a-zA-Z]/.test(password)) return "Password must contain at least one letter";
-  if (!/[0-9]/.test(password)) return "Password must contain at least one number";
-  return null;
-}
+import { escapeRegex, sanitizeSortField, validatePassword, pickDoctorFields, DOCTOR_SORT_FIELDS } from "@/lib/server/validation";
+import { rateLimit, getRateLimitHeaders, getClientIp } from "@/lib/server/rate-limit";
 
 export async function GET(request: NextRequest) {
   try {
@@ -73,6 +47,15 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = getClientIp(request);
+    const rl = rateLimit(`create:doctor:${ip}`, 20, 60_000);
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { message: "Rate limit exceeded" },
+        { status: 429, headers: getRateLimitHeaders(rl, 20) }
+      );
+    }
+
     const auth = await getAuth();
     const session = await getSession(request.headers);
     if (!session || session.user.role !== "admin") {
@@ -89,11 +72,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: "name and email are required" }, { status: 400 });
     }
 
+    if (rest.rating !== undefined) {
+      if (typeof rest.rating !== "number" || rest.rating < 0 || rest.rating > 5) {
+        return NextResponse.json({ message: "Rating must be a number between 0 and 5" }, { status: 400 });
+      }
+    }
+
     const db = await getDB();
     const existingUser = await db.collection("users").findOne({ email: rest.email });
     let userId: string;
 
     if (existingUser) {
+      const existingRole = existingUser.role as string;
+      if (existingRole === "admin") {
+        return NextResponse.json({ message: "Cannot create a doctor for an admin user" }, { status: 400 });
+      }
       userId = existingUser._id.toString();
       await db.collection("users").updateOne({ _id: existingUser._id }, { $set: { role: "doctor" } });
     } else {
@@ -105,11 +98,12 @@ export async function POST(request: NextRequest) {
       await db.collection("users").updateOne({ _id: new ObjectId(userId) }, { $set: { role: "doctor" } });
     }
 
+    const now = new Date();
     const doctorDoc = {
       ...pickDoctorFields(rest),
       userId,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      createdAt: now,
+      updatedAt: now,
     };
 
     const result = await db.collection("doctors").insertOne(doctorDoc);

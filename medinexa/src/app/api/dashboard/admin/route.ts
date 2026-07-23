@@ -17,11 +17,13 @@ export async function GET() {
     const db = await getDB();
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const todayEnd = new Date(todayStart);
+    todayEnd.setDate(todayEnd.getDate() + 1);
 
     const totalPatients = await db.collection("patients").countDocuments();
     const activeDoctors = await db.collection("doctors").countDocuments({ status: "active" });
     const todayAppointments = await db.collection("appointments").countDocuments({
-      date: { $gte: todayStart.toISOString() },
+      date: { $gte: todayStart.toISOString(), $lt: todayEnd.toISOString() },
     });
     const departments = await db.collection("departments").countDocuments();
     const recentRegistrations = await db

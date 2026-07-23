@@ -2,21 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 import { getSession } from "@/lib/server/auth";
 import { getDB } from "@/lib/server/db";
-
-const DOCTOR_UPDATABLE_FIELDS = [
-  "name", "email", "phone", "image", "gender", "dateOfBirth",
-  "department", "specialization", "qualifications", "experience",
-  "consultationFee", "availableDays", "availableTime", "hospitalBranch",
-  "biography", "status", "rating",
-];
-
-function pickDoctorFields(body: Record<string, unknown>) {
-  const picked: Record<string, unknown> = {};
-  for (const key of DOCTOR_UPDATABLE_FIELDS) {
-    if (body[key] !== undefined) picked[key] = body[key];
-  }
-  return picked;
-}
+import { pickDoctorFields } from "@/lib/server/validation";
 
 export async function GET(
   _request: NextRequest,
@@ -61,7 +47,12 @@ export async function PATCH(
     }
     const db = await getDB();
     const body = await request.json();
-    const updateData = { ...pickDoctorFields(body), updatedAt: new Date().toISOString() };
+    if (body.rating !== undefined) {
+      if (typeof body.rating !== "number" || body.rating < 0 || body.rating > 5) {
+        return NextResponse.json({ message: "Rating must be a number between 0 and 5" }, { status: 400 });
+      }
+    }
+    const updateData = { ...pickDoctorFields(body), updatedAt: new Date() };
 
     const result = await db.collection("doctors").updateOne(
       { _id: new ObjectId(id) },

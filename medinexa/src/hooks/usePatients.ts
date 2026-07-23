@@ -18,6 +18,7 @@ export interface Patient {
   emergencyContact: string;
   address: string;
   assignedDoctor: string;
+  assignedDoctorName?: string;
   medicalHistory: string;
   allergies: string;
   currentMedications: string;
