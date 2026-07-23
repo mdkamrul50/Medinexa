@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
 import { fetchFromAPI, ApiError } from "@/lib/api-client";
-import type { UserRole } from "@/lib/auth-utils";
 
 export interface DashboardStats {
   label: string;
@@ -141,6 +140,7 @@ function useFetch<T>(endpoint: string | null): FetchState<T> {
 
   useEffect(() => {
     if (!endpoint) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLoading(false);
       return;
     }
@@ -170,7 +170,6 @@ function useFetch<T>(endpoint: string | null): FetchState<T> {
     return () => {
       cancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [endpoint, trigger]);
 
   return { data, loading, error, refetch };

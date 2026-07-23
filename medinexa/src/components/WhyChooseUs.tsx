@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, type Variants } from 'framer-motion';
 import { 
   FiPhoneCall, FiAward, FiCalendar, 
   FiFolder, FiActivity, FiShield, FiArrowRight 
@@ -64,7 +64,7 @@ const features = [
 ];
 
 export default function WhyChooseUs() {
-  const containerVariants: any = {
+  const containerVariants: Variants = {
     hidden: {},
     visible: {
       transition: {
@@ -73,7 +73,7 @@ export default function WhyChooseUs() {
     },
   };
 
-  const cardVariants: any = {
+  const cardVariants: Variants = {
     hidden: { opacity: 0, y: 30 },
     visible: {
       opacity: 1,

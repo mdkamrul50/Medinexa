@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, ReactNode } from "react";
 import { useUser } from "@/hooks/useUser";
-import { canAccess, type UserRole } from "@/lib/auth-utils";
+import { type UserRole } from "@/lib/auth-utils";
 
 interface RoleGuardProps {
   children: ReactNode;

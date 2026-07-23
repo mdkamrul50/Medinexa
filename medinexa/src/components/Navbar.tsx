@@ -22,6 +22,7 @@ export default function Navbar() {
   // Detect theme on mount to prevent hydration mismatch
   useEffect(() => {
     const isDark = document.documentElement.classList.contains('dark');
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTheme(isDark ? 'dark' : 'light');
   }, []);
 
@@ -122,6 +123,7 @@ export default function Navbar() {
                 <button
                   onClick={() => setIsSearchOpen(!isSearchOpen)}
                   className="flex h-9 w-9 items-center justify-center rounded-full text-body hover:text-heading hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-colors"
+                  aria-label={isSearchOpen ? "Close search" : "Open search"}
                 >
                   <FiSearch className="h-4.5 w-4.5" />
                 </button>
@@ -181,6 +183,7 @@ export default function Navbar() {
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-white dark:bg-slate-800 text-heading hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors shadow-sm"
+                aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
               >
                 {isMobileMenuOpen ? <FiX className="h-5.5 w-5.5" /> : <FiMenu className="h-5.5 w-5.5" />}
               </button>

@@ -1,14 +1,13 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, type Variants } from 'framer-motion';
 import { 
   FiHome, FiUsers, FiCalendar, FiActivity, FiSettings, 
   FiSearch, FiBell, FiPlus, FiTrendingUp, FiCheckCircle, FiClock 
 } from 'react-icons/fi';
 
 export default function DashboardMockup() {
-  // Animation settings
-  const containerVariants: any = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0, y: 40 },
     visible: { 
       opacity: 1, 

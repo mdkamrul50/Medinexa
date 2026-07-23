@@ -16,11 +16,9 @@ import {
   FiMaximize,
   FiHeart,
   FiAlertCircle,
-  FiPlus,
   FiPhoneCall,
   FiMapPin,
   FiUserCheck,
-  FiActivity,
   FiFileText,
 } from "react-icons/fi";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";

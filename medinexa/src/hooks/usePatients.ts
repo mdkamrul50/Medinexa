@@ -73,6 +73,7 @@ export function usePatients(params: UsePatientsParams = {}) {
     }
   }, [params.search, params.bloodGroup, params.status, params.assignedDoctor, params.sortBy, params.sortOrder, params.page, params.limit]);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchPatients(); }, [fetchPatients]);
 
   return { data, loading, error, refetch: fetchPatients };
@@ -97,6 +98,7 @@ export function usePatient(id: string | null) {
     }
   }, [id]);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchPatient(); }, [fetchPatient]);
 
   return { patient, loading, error, refetch: fetchPatient };

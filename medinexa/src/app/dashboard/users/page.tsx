@@ -43,6 +43,7 @@ export default function UsersPage() {
     }
   }, [search]);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchUsers(); }, [fetchUsers]);
 
   const handleRoleChange = async (userId: string, newRole: string) => {

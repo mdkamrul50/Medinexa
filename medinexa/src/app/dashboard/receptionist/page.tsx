@@ -6,10 +6,8 @@ import {
   FiUserPlus,
   FiDollarSign,
   FiUsers,
-  FiClock,
   FiList,
   FiSearch,
-  FiFileText,
 } from "react-icons/fi";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import PageContainer from "@/components/dashboard/PageContainer";

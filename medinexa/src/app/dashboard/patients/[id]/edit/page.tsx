@@ -57,6 +57,7 @@ export default function EditPatientPage({
 
   useEffect(() => {
     if (patient) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setForm({
         name: patient.name || "",
         email: patient.email || "",

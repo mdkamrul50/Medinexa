@@ -97,7 +97,7 @@ export default function PatientsListPage() {
   const [search, setSearch] = useState("");
   const [bloodGroup, setBloodGroup] = useState("");
   const [status, setStatus] = useState("");
-  const [assignedDoctor, setAssignedDoctor] = useState("");
+  const [assignedDoctor] = useState("");
   const [sortBy, setSortBy] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState("desc");
   const [page, setPage] = useState(1);

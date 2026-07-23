@@ -58,6 +58,7 @@ export default function LoginForm() {
   useEffect(() => {
     const redirect = searchParams.get('redirect');
     if (redirect && redirect.startsWith('/')) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setRedirectTo(redirect);
     }
   }, [searchParams]);

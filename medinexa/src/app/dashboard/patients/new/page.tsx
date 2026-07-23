@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { FiArrowLeft, FiSave, FiUserPlus } from "react-icons/fi";
+import { FiArrowLeft, FiSave } from "react-icons/fi";
 import Link from "next/link";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import PageContainer from "@/components/dashboard/PageContainer";
@@ -11,7 +11,7 @@ import RoleGuard from "@/components/auth/RoleGuard";
 import DashboardSection from "@/components/dashboard/DashboardSection";
 import StaggerContainer from "@/components/dashboard/StaggerContainer";
 import { createPatient } from "@/hooks/usePatients";
-import { useDoctors, type Doctor } from "@/hooks/useDoctors";
+import { useDoctors } from "@/hooks/useDoctors";
 
 const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 const GENDERS = ["Male", "Female", "Other"];

@@ -71,6 +71,7 @@ export function useDoctors(params: UseDoctorsParams = {}) {
     }
   }, [params.search, params.department, params.status, params.sortBy, params.sortOrder, params.page, params.limit]);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchDoctors(); }, [fetchDoctors]);
 
   return { data, loading, error, refetch: fetchDoctors };
@@ -95,6 +96,7 @@ export function useDoctor(id: string | null) {
     }
   }, [id]);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchDoctor(); }, [fetchDoctor]);
 
   return { doctor, loading, error, refetch: fetchDoctor };

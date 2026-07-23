@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { FaStar, FaUserFriends } from 'react-icons/fa';
 import { FiArrowRight } from 'react-icons/fi';
+import Image from 'next/image';
 
 interface Doctor {
   image: string;
@@ -141,11 +142,11 @@ export default function DoctorsSection() {
                 
                 {/* Doctor Image Block */}
                 <div className="relative w-full aspect-square rounded-xl overflow-hidden mb-5 bg-slate-100 dark:bg-slate-800">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img 
+                  <Image 
                     src={doc.image} 
                     alt={doc.name}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   {/* Badge */}
                   <span className={`absolute top-3 right-3 text-[10px] font-bold px-2.5 py-1 rounded-full border shadow-sm ${doc.badgeColor}`}>

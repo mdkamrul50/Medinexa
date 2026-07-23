@@ -1,12 +1,12 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, type Variants } from 'framer-motion';
 import { FiPlay, FiArrowRight, FiUsers, FiClock, FiActivity, FiCheck } from 'react-icons/fi';
 import DashboardMockup from './DashboardMockup';
+import Image from 'next/image';
 
 export default function Hero() {
-  // Stagger children transition
-  const containerVariants: any = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -16,7 +16,7 @@ export default function Hero() {
     },
   };
 
-  const itemVariants: any = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 30 },
     visible: {
       opacity: 1,
@@ -214,7 +214,7 @@ export default function Hero() {
                     'https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&w=80&q=80'
                   ].map((url, i) => (
                     <div key={i} className="h-8 w-8 rounded-full border-2 border-white dark:border-slate-800 overflow-hidden bg-slate-100">
-                      <img src={url} alt="Doctor avatar" className="h-full w-full object-cover" />
+                      <Image src={url} alt="Doctor avatar" width={32} height={32} className="h-full w-full object-cover" />
                     </div>
                   ))}
                   <div className="h-8 w-8 rounded-full border-2 border-white dark:border-slate-800 bg-secondary/15 flex items-center justify-center text-[10px] font-bold text-secondary">

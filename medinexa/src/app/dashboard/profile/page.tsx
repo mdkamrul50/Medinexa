@@ -19,6 +19,7 @@ import {
   FiMonitor,
   FiSave,
 } from "react-icons/fi";
+import Image from "next/image";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import PageContainer from "@/components/dashboard/PageContainer";
 import RoleGuard from "@/components/auth/RoleGuard";
@@ -26,7 +27,7 @@ import DashboardSection from "@/components/dashboard/DashboardSection";
 import { Skeleton } from "@/components/dashboard/Skeleton";
 import { useUser } from "@/hooks/useUser";
 import { useProfileUpdate } from "@/hooks/useProfileUpdate";
-import { getRoleBadgeColor, type UserRole } from "@/lib/auth-utils";
+import { getRoleBadgeColor } from "@/lib/auth-utils";
 
 function formatDate(dateStr: string | undefined | null): string {
   if (!dateStr) return "N/A";
@@ -163,6 +164,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (user) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setEditName(user.name ?? "");
       setEditPhone((user as { phone?: string }).phone ?? "");
       setEditAddress((user as { address?: string }).address ?? "");
@@ -234,7 +236,7 @@ export default function ProfilePage() {
                   <div className="relative shrink-0">
                     <div className="h-28 w-28 sm:h-32 sm:w-32 rounded-2xl border-4 border-card bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white text-3xl sm:text-4xl font-extrabold shadow-xl shadow-primary/20 overflow-hidden">
                       {user?.image ? (
-                        <img src={user.image} alt="" className="h-full w-full object-cover" />
+                        <Image src={user.image} alt="" width={128} height={128} className="h-full w-full object-cover" />
                       ) : (
                         initials
                       )}
@@ -400,7 +402,7 @@ export default function ProfilePage() {
                       <div className="flex items-center justify-center py-6 text-center">
                         <div className="flex flex-col items-center gap-2">
                           <FiUser className="h-8 w-8 text-muted" />
-                          <p className="text-sm text-muted">Click "Edit" to update your profile information</p>
+                          <p className="text-sm text-muted">Click &quot;Edit&quot; to update your profile information</p>
                         </div>
                       </div>
                     )}

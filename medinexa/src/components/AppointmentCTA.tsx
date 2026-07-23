@@ -1,8 +1,9 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { FiCheck, FiArrowRight, FiCalendar, FiClock, FiStar } from 'react-icons/fi';
+import { FiCheck, FiArrowRight, FiCalendar, FiStar } from 'react-icons/fi';
 import { FaCheckCircle, FaUserCheck, FaRegChartBar } from 'react-icons/fa';
+import Image from 'next/image';
 
 const benefits = [
   'Direct booking with board-certified clinical specialists',
@@ -155,10 +156,11 @@ export default function AppointmentCTA() {
               {...cardFloat(1.5)}
               className="absolute -top-4 right-[5%] w-[48%] bg-white dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200/80 rounded-2xl shadow-lg p-4 flex gap-3 items-center z-10 hover:shadow-xl transition-all"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img 
+              <Image 
                 src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=100&h=100&q=80" 
-                alt="Sarah Jenkins"
+                alt="Dr. Sarah Jenkins"
+                width={40}
+                height={40}
                 className="h-10 w-10 rounded-full object-cover shadow-sm shrink-0 border border-border"
               />
               <div className="overflow-hidden">

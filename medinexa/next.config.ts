@@ -17,6 +17,11 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ["mongodb"],
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "images.unsplash.com" },
+    ],
+  },
   async headers() {
     return [
       {

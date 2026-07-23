@@ -12,7 +12,9 @@ function cleanup() {
   }
 }
 
-setInterval(cleanup, 60_000);
+if (process.env.NODE_ENV === "production") {
+  setInterval(cleanup, 60_000);
+}
 
 export function rateLimit(
   key: string,

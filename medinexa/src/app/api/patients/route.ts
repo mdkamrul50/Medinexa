@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
       .toArray();
 
     const doctorUserIds = [...new Set(patients.map((p) => p.assignedDoctor).filter(Boolean))];
-    let doctorNameMap: Record<string, string> = {};
+    const doctorNameMap: Record<string, string> = {};
     if (doctorUserIds.length > 0) {
       const doctors = await db.collection("doctors")
         .find({ userId: { $in: doctorUserIds } })

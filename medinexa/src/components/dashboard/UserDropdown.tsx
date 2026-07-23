@@ -6,11 +6,11 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FiUser,
-  FiSettings,
   FiLogOut,
   FiChevronDown,
   FiLoader,
 } from "react-icons/fi";
+import Image from "next/image";
 import { authClient } from "@/lib/auth-client";
 import { useUser } from "@/hooks/useUser";
 import { getRoleBadgeColor } from "@/lib/auth-utils";
@@ -60,7 +60,7 @@ export default function UserDropdown() {
           {isPending ? (
             <FiLoader className="h-3.5 w-3.5 animate-spin" />
           ) : displayImage ? (
-            <img src={displayImage} alt="" className="h-full w-full object-cover" />
+            <Image src={displayImage} alt="" width={32} height={32} className="h-full w-full object-cover" />
           ) : (
             initials
           )}
@@ -93,7 +93,7 @@ export default function UserDropdown() {
                 <div className="flex items-center gap-3 px-4 py-3.5 border-b border-border">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-blue-500 text-sm font-bold text-white shadow-sm overflow-hidden">
                     {displayImage ? (
-                      <img src={displayImage} alt="" className="h-full w-full object-cover" />
+            <Image src={displayImage} alt={`${displayName}'s profile`} width={32} height={32} className="h-full w-full object-cover" />
                     ) : (
                       initials
                     )}

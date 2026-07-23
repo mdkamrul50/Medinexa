@@ -9,7 +9,6 @@ import {
   FiDollarSign,
   FiShield,
   FiUserPlus,
-  FiActivity,
   FiBarChart2,
   FiSettings,
   FiFileText,

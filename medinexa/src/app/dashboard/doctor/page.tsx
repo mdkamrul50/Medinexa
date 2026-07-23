@@ -22,7 +22,7 @@ import QuickActionCard from "@/components/dashboard/QuickActionCard";
 import StaggerContainer from "@/components/dashboard/StaggerContainer";
 import { useUser } from "@/hooks/useUser";
 import { useDoctorDashboard } from "@/hooks/useDashboardData";
-import type { AppointmentItem, PatientVisit, DashboardStats } from "@/hooks/useDashboardData";
+import type { AppointmentItem, PatientVisit } from "@/hooks/useDashboardData";
 import type { UserRole } from "@/lib/auth-utils";
 import type { IconType } from "react-icons";
 

@@ -27,13 +27,6 @@ import { usePatientDashboard } from "@/hooks/useDashboardData";
 import type { AppointmentItem, PrescriptionItem, MedicalReport, PaymentItem } from "@/hooks/useDashboardData";
 import type { UserRole } from "@/lib/auth-utils";
 
-const statusColor: Record<string, string> = {
-  scheduled: "bg-blue-500/10 text-blue-500",
-  "checked-in": "bg-amber-500/10 text-amber-500",
-  completed: "bg-emerald-500/10 text-emerald-500",
-  cancelled: "bg-red-500/10 text-red-500",
-};
-
 function AppointmentRow({ item }: { item: AppointmentItem }) {
   return (
     <>

@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
 import { useInView } from 'framer-motion';
+import Image from 'next/image';
 import { FaStar, FaCheckCircle, FaQuoteLeft } from 'react-icons/fa';
 import { FiUsers, FiAward, FiHeart, FiClock } from 'react-icons/fi';
 
@@ -256,17 +257,18 @@ export default function TestimonialsSection() {
 
                 {/* Testimonial text */}
                 <p className="text-sm sm:text-base text-body font-medium leading-relaxed mb-6 group-hover:text-heading transition-colors duration-300">
-                  "{test.text}"
+                  &quot;{test.text}&quot;
                 </p>
               </div>
 
               {/* Patient Profile */}
               <div className="flex items-center justify-between pt-6 border-t border-border/40 mt-auto">
                 <div className="flex items-center gap-3.5">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img 
+                  <Image 
                     src={test.avatar} 
                     alt={test.name} 
+                    width={48}
+                    height={48}
                     className="h-12 w-12 rounded-full object-cover border-2 border-white dark:border-slate-800 shadow-sm"
                   />
                   <div>
