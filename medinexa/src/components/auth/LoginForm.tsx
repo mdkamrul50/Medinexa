@@ -3,9 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { FiMail, FiLock, FiEye, FiEyeOff, FiArrowRight, FiActivity, FiAlertCircle, FiLoader } from 'react-icons/fi';
-import { FaApple, FaFacebook } from 'react-icons/fa';
-import { FcGoogle } from 'react-icons/fc';
+import { FiMail, FiLock, FiEye, FiEyeOff, FiArrowRight, FiActivity, FiAlertCircle, FiLoader, FiUsers } from 'react-icons/fi';
 import { authClient } from '@/lib/auth-client';
 
 const containerVariants = {
