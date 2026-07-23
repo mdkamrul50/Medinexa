@@ -1,36 +1,12 @@
 import { headers } from "next/headers";
-
-const AUTH_URL = process.env.AUTH_URL || "http://localhost:3001";
+import { getAuth } from "./server/auth";
 
 export async function getServerSession() {
-  const cookieHeader = (await headers()).get("cookie") ?? "";
-
   try {
-    const res = await fetch(`${AUTH_URL}/api/auth/get-session`, {
-      headers: { cookie: cookieHeader },
-      cache: "no-store",
-    });
-
-    if (!res.ok) return null;
-    return res.json() as Promise<{
-      user: {
-        id: string;
-        name: string;
-        email: string;
-        emailVerified: boolean;
-        image?: string;
-        role?: string;
-        createdAt: string;
-        updatedAt: string;
-      };
-      session: {
-        id: string;
-        userId: string;
-        expiresAt: string;
-        createdAt: string;
-        updatedAt: string;
-      };
-    } | null>;
+    const auth = await getAuth();
+    const h = await headers();
+    const session = await auth.api.getSession({ headers: h });
+    return session;
   } catch {
     return null;
   }
