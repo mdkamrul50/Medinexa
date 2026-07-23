@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import LoginForm from '@/components/auth/LoginForm';
 
 export const metadata: Metadata = {
@@ -26,7 +27,9 @@ export default function LoginPage() {
       </div>
 
       <div className="relative w-full max-w-[460px]">
-        <LoginForm />
+        <Suspense>
+          <LoginForm />
+        </Suspense>
       </div>
     </div>
   );

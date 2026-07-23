@@ -105,7 +105,7 @@ function BillingRow({ item }: { item: BillingItem }) {
 
 export default function ReceptionistDashboardPage() {
   const { user } = useUser();
-  const { data, loading } = useReceptionistDashboard();
+  const { data, loading, error } = useReceptionistDashboard();
 
   const firstName = user?.name?.split(" ")[0] ?? "Receptionist";
 
@@ -162,6 +162,12 @@ export default function ReceptionistDashboardPage() {
               title={`Welcome back, ${firstName}`}
               description="Manage appointments, patient registrations, and front desk operations."
             />
+
+            {error && (
+              <div className="rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 px-4 py-3 text-sm text-red-600 dark:text-red-400">
+                {error}
+              </div>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {statsData.map((stat) => (

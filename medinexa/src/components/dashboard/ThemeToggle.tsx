@@ -4,12 +4,20 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FiSun, FiMoon } from "react-icons/fi";
 
+function getInitialTheme(): "light" | "dark" {
+  if (typeof window === "undefined") return "light";
+  const saved = localStorage.getItem("theme");
+  if (saved === "dark" || saved === "light") return saved;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
 export default function ThemeToggle() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const isDark = document.documentElement.classList.contains("dark");
-    setTheme(isDark ? "dark" : "light");
+    setTheme(getInitialTheme());
+    setMounted(true);
   }, []);
 
   const toggle = () => {
@@ -23,6 +31,12 @@ export default function ThemeToggle() {
       localStorage.setItem("theme", "light");
     }
   };
+
+  if (!mounted) {
+    return (
+      <div className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-slate-50 dark:bg-slate-800/40" />
+    );
+  }
 
   return (
     <button

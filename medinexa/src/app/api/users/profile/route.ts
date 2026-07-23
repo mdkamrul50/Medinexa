@@ -18,8 +18,8 @@ export async function PATCH(request: NextRequest) {
     }
 
     const db = await getDB();
-    const updateData: Record<string, unknown> = {};
-    if (name) updateData.name = name;
+    const updateData: Record<string, unknown> = { updatedAt: new Date().toISOString() };
+    if (name) updateData.name = String(name).trim();
     if (phone !== undefined) updateData.phone = phone;
     if (address !== undefined) updateData.address = address;
 

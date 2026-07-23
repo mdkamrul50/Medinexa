@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -111,16 +112,16 @@ export default function UserDropdown() {
               <div className="p-1.5">
                 {[
                   { label: "My Profile", icon: FiUser, href: "/dashboard/profile" },
-                  { label: "Settings", icon: FiSettings, href: "/dashboard/settings" },
                 ].map((item) => (
-                  <a
+                  <Link
                     key={item.label}
                     href={item.href}
+                    onClick={() => setOpen(false)}
                     className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-body hover:text-heading hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
                   >
                     <item.icon className="h-4 w-4 text-muted" />
                     {item.label}
-                  </a>
+                  </Link>
                 ))}
               </div>
 

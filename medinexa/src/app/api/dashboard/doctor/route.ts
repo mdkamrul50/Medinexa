@@ -9,6 +9,9 @@ export async function GET() {
     if (!session) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
+    if (session.user.role !== "doctor" && session.user.role !== "admin") {
+      return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+    }
 
     return NextResponse.json({
       stats: [

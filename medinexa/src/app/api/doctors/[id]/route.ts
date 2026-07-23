@@ -29,6 +29,10 @@ export async function GET(
     }
 
     const { id } = await params;
+    if (!ObjectId.isValid(id)) {
+      return NextResponse.json({ message: "Invalid doctor ID format" }, { status: 400 });
+    }
+
     const db = await getDB();
     const doctor = await db.collection("doctors").findOne({ _id: new ObjectId(id) });
     if (!doctor) {
@@ -52,6 +56,9 @@ export async function PATCH(
     }
 
     const { id } = await params;
+    if (!ObjectId.isValid(id)) {
+      return NextResponse.json({ message: "Invalid doctor ID format" }, { status: 400 });
+    }
     const db = await getDB();
     const body = await request.json();
     const updateData = { ...pickDoctorFields(body), updatedAt: new Date().toISOString() };
@@ -83,6 +90,10 @@ export async function DELETE(
     }
 
     const { id } = await params;
+    if (!ObjectId.isValid(id)) {
+      return NextResponse.json({ message: "Invalid doctor ID format" }, { status: 400 });
+    }
+
     const db = await getDB();
     const doctor = await db.collection("doctors").findOne({ _id: new ObjectId(id) });
     if (!doctor) {

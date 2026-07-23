@@ -6,7 +6,7 @@ import { FiSearch, FiMenu, FiX, FiActivity, FiArrowRight, FiSun, FiMoon } from '
 
 const navLinks = [
   { name: 'Home', href: '#home' },
-  { name: 'About', href: '#about' },
+  { name: 'About', href: '#why-choose-us' },
   { name: 'Services', href: '#services' },
   { name: 'Doctors', href: '#doctors' },
   { name: 'Contact', href: '#contact' },

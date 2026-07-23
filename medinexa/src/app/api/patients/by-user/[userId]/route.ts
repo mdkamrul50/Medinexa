@@ -13,6 +13,14 @@ export async function GET(
     }
 
     const { userId } = await params;
+    const isAdmin = session.user.role === "admin";
+    const isReceptionist = session.user.role === "receptionist";
+    const isOwnRecord = session.user.id === userId;
+
+    if (!isAdmin && !isReceptionist && !isOwnRecord) {
+      return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+    }
+
     const db = await getDB();
     const patient = await db.collection("patients").findOne({ userId });
     if (!patient) {

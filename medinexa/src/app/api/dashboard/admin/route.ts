@@ -10,6 +10,9 @@ export async function GET() {
     if (!session) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
+    if (session.user.role !== "admin") {
+      return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+    }
 
     const db = await getDB();
     const now = new Date();

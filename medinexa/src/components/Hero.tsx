@@ -118,7 +118,7 @@ export default function Hero() {
             >
               {/* Primary button */}
               <motion.a
-                href="#get-started"
+                href="/register"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 className="w-full sm:w-auto relative inline-flex items-center justify-center gap-2 rounded-full bg-primary px-8 py-4 text-base font-bold text-white shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/45 transition-all cursor-pointer group overflow-hidden"
@@ -130,7 +130,7 @@ export default function Hero() {
 
               {/* Secondary button */}
               <motion.a
-                href="#demo"
+                href="#contact"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full border border-border bg-card/60 dark:bg-slate-900/40 backdrop-blur-sm px-8 py-4 text-base font-bold text-heading shadow-sm hover:border-slate-350 dark:hover:border-slate-700 transition-all"

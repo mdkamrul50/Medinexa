@@ -27,7 +27,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${plusJakartaSans.variable} ${geistMono.variable} h-full antialiasedScroll`}
+      className={`${plusJakartaSans.variable} ${geistMono.variable} h-full antialiased scroll-smooth`}
     >
       <head>
         <script

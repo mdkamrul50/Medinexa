@@ -26,7 +26,7 @@ import QuickActionCard from "@/components/dashboard/QuickActionCard";
 import StaggerContainer from "@/components/dashboard/StaggerContainer";
 import { useUser } from "@/hooks/useUser";
 import { useAdminDashboard } from "@/hooks/useDashboardData";
-import type { AppointmentItem, RegistrationItem, DashboardStats } from "@/hooks/useDashboardData";
+import type { AppointmentItem, RegistrationItem } from "@/hooks/useDashboardData";
 import type { UserRole } from "@/lib/auth-utils";
 import type { IconType } from "react-icons";
 
@@ -69,7 +69,7 @@ function RegistrationRow({ item }: { item: RegistrationItem }) {
 
 export default function AdminDashboardPage() {
   const { user } = useUser();
-  const { data, loading } = useAdminDashboard();
+  const { data, loading, error } = useAdminDashboard();
 
   const firstName = user?.name?.split(" ")[0] ?? "Admin";
 
@@ -106,6 +106,12 @@ export default function AdminDashboardPage() {
               title={`Welcome back, ${firstName}`}
               description="You have full system access and control. Monitor and manage all hospital operations."
             />
+
+            {error && (
+              <div className="rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 px-4 py-3 text-sm text-red-600 dark:text-red-400">
+                {error}
+              </div>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {statCards.map((card) => {

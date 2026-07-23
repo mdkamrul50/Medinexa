@@ -97,7 +97,7 @@ export default function AppointmentCTA() {
               className="flex flex-wrap gap-4 w-full sm:w-auto"
             >
               <motion.a
-                href="#book"
+                href="/register"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-blue-500 px-6 py-3.5 text-sm font-bold text-white shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 transition-all cursor-pointer group"
@@ -107,7 +107,7 @@ export default function AppointmentCTA() {
               </motion.a>
 
               <motion.a
-                href="#how-it-works"
+                href="#doctors"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 className="flex items-center justify-center gap-2 rounded-xl border border-border/80 bg-white hover:bg-slate-100 px-6 py-3.5 text-sm font-bold text-body hover:text-heading transition-all cursor-pointer"

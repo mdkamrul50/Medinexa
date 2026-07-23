@@ -2,11 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 import { getAuth, getSession } from "@/lib/server/auth";
 import { getDB } from "@/lib/server/db";
+import { escapeRegex, sanitizeSortField } from "@/lib/server/query-utils";
 
 const PATIENT_UPDATABLE_FIELDS = [
   "name", "email", "phone", "image", "gender", "dateOfBirth",
   "bloodGroup", "height", "weight", "emergencyContact", "address",
   "assignedDoctor", "medicalHistory", "allergies", "currentMedications", "status",
+];
+
+const PATIENT_SORT_FIELDS = [
+  "name", "email", "createdAt", "updatedAt", "bloodGroup", "status",
 ];
 
 function pickPatientFields(body: Record<string, unknown>) {
@@ -38,21 +43,42 @@ export async function GET(request: NextRequest) {
     const bloodGroup = searchParams.get("bloodGroup") || "";
     const status = searchParams.get("status") || "";
     const assignedDoctor = searchParams.get("assignedDoctor") || "";
-    const sortBy = searchParams.get("sortBy") || "createdAt";
+    const sortBy = sanitizeSortField(searchParams.get("sortBy") || "createdAt", PATIENT_SORT_FIELDS);
     const sortOrder = searchParams.get("sortOrder") || "desc";
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
 
     const query: Record<string, unknown> = {};
-    if (search.trim()) {
+
+    if (session.user.role === "patient") {
+      const patientDoc = await db.collection("patients").findOne({ userId: session.user.id });
+      if (!patientDoc) {
+        return NextResponse.json({ patients: [], total: 0, page: 1, totalPages: 0 });
+      }
+      query._id = patientDoc._id;
+    } else if (session.user.role === "doctor") {
       query.$or = [
-        { name: { $regex: search.trim(), $options: "i" } },
-        { email: { $regex: search.trim(), $options: "i" } },
+        { assignedDoctor: session.user.id },
+        { assignedDoctor: session.user.name },
       ];
+    }
+
+    if (search.trim()) {
+      const escaped = escapeRegex(search.trim());
+      const searchQuery = { $regex: escaped, $options: "i" };
+      if (query.$or) {
+        query.$and = [
+          { $or: query.$or as object[] },
+          { $or: [{ name: searchQuery }, { email: searchQuery }] },
+        ];
+        delete query.$or;
+      } else {
+        query.$or = [{ name: searchQuery }, { email: searchQuery }];
+      }
     }
     if (bloodGroup) query.bloodGroup = bloodGroup;
     if (status) query.status = status;
-    if (assignedDoctor) query.assignedDoctor = assignedDoctor;
+    if (assignedDoctor && session.user.role !== "patient") query.assignedDoctor = assignedDoctor;
 
     const pageNum = Math.max(1, page);
     const limitNum = Math.min(100, Math.max(1, limit));

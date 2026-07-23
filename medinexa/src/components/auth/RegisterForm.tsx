@@ -1,12 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { FiUser, FiMail, FiLock, FiEye, FiEyeOff, FiArrowRight, FiActivity, FiPhone, FiAlertCircle, FiLoader, FiCheck } from 'react-icons/fi';
-import { FaApple, FaFacebook } from 'react-icons/fa';
-import { FcGoogle } from 'react-icons/fc';
 import { authClient } from '@/lib/auth-client';
+import { getDefaultRouteForRole, type UserRole } from '@/lib/auth-utils';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -54,7 +53,6 @@ const strengthConfig = [
 
 export default function RegisterForm() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -68,14 +66,6 @@ export default function RegisterForm() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
-  const [redirectTo, setRedirectTo] = useState('/dashboard');
-
-  useEffect(() => {
-    const redirect = searchParams.get('redirect');
-    if (redirect && redirect.startsWith('/')) {
-      setRedirectTo(redirect);
-    }
-  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -122,8 +112,11 @@ export default function RegisterForm() {
 
     setIsLoading(false);
     setSuccess('Account created successfully!');
+
+    const { data: sessionData } = await authClient.getSession();
+    const role = (sessionData?.user as { role?: UserRole })?.role ?? null;
     setTimeout(() => {
-      router.push(redirectTo);
+      router.push(role ? getDefaultRouteForRole(role) : '/dashboard');
     }, 500);
   };
 
@@ -422,39 +415,6 @@ export default function RegisterForm() {
                 </>
               )}
             </motion.button>
-          </motion.div>
-
-          <motion.div variants={itemVariants} className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-border" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase tracking-widest">
-              <span className="bg-card/70 backdrop-blur-xl px-4 text-muted font-medium">
-                Or continue with
-              </span>
-            </div>
-          </motion.div>
-
-          <motion.div variants={itemVariants} className="grid grid-cols-3 gap-3">
-            {[
-              { icon: <FcGoogle className="h-5 w-5" />, label: 'Google' },
-              { icon: <FaApple className="h-5 w-5 text-heading" />, label: 'Apple' },
-              {
-                icon: <FaFacebook className="h-5 w-5" style={{ color: '#1877F2' }} />,
-                label: 'Facebook',
-              },
-            ].map(({ icon, label }) => (
-              <motion.button
-                key={label}
-                type="button"
-                whileHover={{ scale: 1.03, y: -2 }}
-                whileTap={{ scale: 0.97 }}
-                className="flex items-center justify-center py-3 rounded-xl border border-border bg-slate-50/50 dark:bg-slate-800/20 hover:bg-slate-100 dark:hover:bg-slate-700/30 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-md transition-all"
-                aria-label={`Sign up with ${label}`}
-              >
-                {icon}
-              </motion.button>
-            ))}
           </motion.div>
 
           <motion.p variants={itemVariants} className="text-center text-sm text-body">

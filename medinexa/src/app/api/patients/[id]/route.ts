@@ -28,10 +28,18 @@ export async function GET(
     }
 
     const { id } = await params;
+    if (!ObjectId.isValid(id)) {
+      return NextResponse.json({ message: "Invalid patient ID format" }, { status: 400 });
+    }
+
     const db = await getDB();
     const patient = await db.collection("patients").findOne({ _id: new ObjectId(id) });
     if (!patient) {
       return NextResponse.json({ message: "Patient not found" }, { status: 404 });
+    }
+
+    if (session.user.role === "patient" && patient.userId !== session.user.id) {
+      return NextResponse.json({ message: "Forbidden" }, { status: 403 });
     }
 
     return NextResponse.json(patient);
@@ -56,6 +64,10 @@ export async function PATCH(
     }
 
     const { id } = await params;
+    if (!ObjectId.isValid(id)) {
+      return NextResponse.json({ message: "Invalid patient ID format" }, { status: 400 });
+    }
+
     const db = await getDB();
 
     if (session.user.role === "doctor") {
@@ -98,6 +110,10 @@ export async function DELETE(
     }
 
     const { id } = await params;
+    if (!ObjectId.isValid(id)) {
+      return NextResponse.json({ message: "Invalid patient ID format" }, { status: 400 });
+    }
+
     const db = await getDB();
     const patient = await db.collection("patients").findOne({ _id: new ObjectId(id) });
     if (!patient) {

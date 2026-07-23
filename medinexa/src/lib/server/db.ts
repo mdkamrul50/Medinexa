@@ -1,16 +1,45 @@
 import { MongoClient, Db } from "mongodb";
 import dns from "dns";
 
-const DNS_SERVERS = process.env.DNS_SERVERS;
-if (DNS_SERVERS) {
-  dns.setServers(DNS_SERVERS.split(","));
-}
+dns.setServers(["8.8.8.8", "8.8.4.4"]);
 
-const MONGODB_URI = process.env.MONGODB_URI;
-if (!MONGODB_URI) {
+const RAW_URI: string = process.env.MONGODB_URI ?? "";
+if (!RAW_URI) {
   throw new Error("MONGODB_URI environment variable is required");
 }
-const MONGO_URI: string = MONGODB_URI;
+
+async function buildDirectURI(rawURI: string): Promise<string> {
+  const srvMatch = rawURI.match(/^mongodb\+srv:\/\/(.+@)?([^\/\?]+)(\/[^?]*)?(\?.*)?$/);
+  if (!srvMatch) return rawURI;
+
+  const creds = srvMatch[1] || "";
+  const host = srvMatch[2];
+  const dbPath = srvMatch[3] || "";
+  const query = srvMatch[4] || "";
+
+  const [srvRecords, txtRecords] = await Promise.all([
+    dns.promises.resolveSrv(`_mongodb._tcp.${host}`),
+    dns.promises.resolveTxt(host).catch(() => [] as string[][]),
+  ]);
+
+  const hosts = srvRecords
+    .sort((a, b) => a.priority - b.priority)
+    .map((r) => `${r.name}:${r.port}`)
+    .join(",");
+
+  const txtExtra = txtRecords.flat().join("&");
+
+  return `mongodb://${creds}${hosts}${dbPath}${query}${query ? "&" : "?"}tls=true${txtExtra ? `&${txtExtra}` : ""}`;
+}
+
+let _directURI: string | null = null;
+
+async function getDirectURI(): Promise<string> {
+  if (!_directURI) {
+    _directURI = await buildDirectURI(RAW_URI);
+  }
+  return _directURI;
+}
 
 const globalForMongo = globalThis as unknown as {
   _mongoClient?: MongoClient;
@@ -23,11 +52,12 @@ export async function connectDB(): Promise<{ client: MongoClient; db: Db }> {
 
   if (!globalForMongo._mongoPromise) {
     globalForMongo._mongoPromise = (async () => {
-      const client = new MongoClient(MONGO_URI, {
+      const uri = await getDirectURI();
+      const client = new MongoClient(uri, {
         maxPoolSize: 10,
         minPoolSize: 0,
-        serverSelectionTimeoutMS: 5000,
-        connectTimeoutMS: 3000,
+        serverSelectionTimeoutMS: 15000,
+        connectTimeoutMS: 10000,
       });
       await client.connect();
       globalForMongo._mongoClient = client;

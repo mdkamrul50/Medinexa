@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { FiMail, FiLock, FiEye, FiEyeOff, FiArrowRight, FiActivity, FiAlertCircle, FiLoader, FiUsers } from 'react-icons/fi';
+import { FiMail, FiLock, FiEye, FiEyeOff, FiArrowRight, FiActivity, FiAlertCircle, FiLoader, FiUserPlus } from 'react-icons/fi';
 import { authClient } from '@/lib/auth-client';
+import { getDefaultRouteForRole, type UserRole } from '@/lib/auth-utils';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -52,7 +53,7 @@ export default function LoginForm() {
   const [focusedField, setFocusedField] = useState<'email' | 'password' | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [redirectTo, setRedirectTo] = useState('/dashboard');
+  const [redirectTo, setRedirectTo] = useState<string | null>(null);
 
   useEffect(() => {
     const redirect = searchParams.get('redirect');
@@ -60,6 +61,34 @@ export default function LoginForm() {
       setRedirectTo(redirect);
     }
   }, [searchParams]);
+
+  const getPostLoginRedirect = (role: UserRole | null): string => {
+    if (redirectTo) return redirectTo;
+    if (role) return getDefaultRouteForRole(role);
+    return '/dashboard';
+  };
+
+  const handleDemoLogin = async () => {
+    setError(null);
+    setIsLoading(true);
+
+    const { error: signInError } = await authClient.signIn.email({
+      email: 'demo@medinexa.com',
+      password: 'Demo12345',
+      rememberMe: false,
+    });
+
+    if (signInError) {
+      setError('Demo account not found. Please register first.');
+      setIsLoading(false);
+      return;
+    }
+
+    const { data: sessionData } = await authClient.getSession();
+    const role = (sessionData?.user as { role?: UserRole })?.role ?? null;
+    setIsLoading(false);
+    router.push(getPostLoginRedirect(role));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,8 +107,10 @@ export default function LoginForm() {
       return;
     }
 
+    const { data: sessionData } = await authClient.getSession();
+    const role = (sessionData?.user as { role?: UserRole })?.role ?? null;
     setIsLoading(false);
-    router.push(redirectTo);
+    router.push(getPostLoginRedirect(role));
   };
 
   return (
@@ -258,26 +289,25 @@ export default function LoginForm() {
             </div>
           </motion.div>
 
-          <motion.div variants={itemVariants} className="grid grid-cols-3 gap-3">
-            {[
-              { icon: <FcGoogle className="h-5 w-5" />, label: 'Google' },
-              { icon: <FaApple className="h-5 w-5 text-heading" />, label: 'Apple' },
-              {
-                icon: <FaFacebook className="h-5 w-5" style={{ color: '#1877F2' }} />,
-                label: 'Facebook',
-              },
-            ].map(({ icon, label }) => (
-              <motion.button
-                key={label}
-                type="button"
-                whileHover={{ scale: 1.03, y: -2 }}
-                whileTap={{ scale: 0.97 }}
-                className="flex items-center justify-center py-3 rounded-xl border border-border bg-slate-50/50 dark:bg-slate-800/20 hover:bg-slate-100 dark:hover:bg-slate-700/30 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-md transition-all"
-                aria-label={`Sign in with ${label}`}
-              >
-                {icon}
-              </motion.button>
-            ))}
+          <motion.div variants={itemVariants} className="grid grid-cols-1 gap-3">
+            <motion.button
+              type="button"
+              onClick={handleDemoLogin}
+              disabled={isLoading}
+              whileHover={{ scale: 1.03, y: -2 }}
+              whileTap={{ scale: 0.97 }}
+              aria-label="Demo login with sample account"
+              className="flex items-center justify-center gap-2 py-3 rounded-xl border border-border bg-slate-50/50 dark:bg-slate-800/20 hover:bg-slate-100 dark:hover:bg-slate-700/30 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-md transition-all disabled:opacity-50"
+            >
+              {isLoading ? (
+                <FiLoader className="h-5 w-5 animate-spin text-primary" />
+              ) : (
+                <>
+                  <FiUserPlus className="h-5 w-5 text-primary" />
+                  <span className="text-xs font-semibold text-primary">Try Demo Account</span>
+                </>
+              )}
+            </motion.button>
           </motion.div>
 
           <motion.p variants={itemVariants} className="text-center text-sm text-body">

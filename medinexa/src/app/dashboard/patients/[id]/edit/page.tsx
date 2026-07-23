@@ -12,6 +12,7 @@ import DashboardSection from "@/components/dashboard/DashboardSection";
 import StaggerContainer from "@/components/dashboard/StaggerContainer";
 import { TableSkeleton } from "@/components/dashboard/Skeleton";
 import { usePatient, updatePatient } from "@/hooks/usePatients";
+import { useDoctors } from "@/hooks/useDoctors";
 import { useUser } from "@/hooks/useUser";
 
 const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
@@ -26,6 +27,8 @@ export default function EditPatientPage({
   const router = useRouter();
   const { user, role } = useUser();
   const { patient, loading: fetching } = usePatient(id);
+  const { data: doctorsData } = useDoctors({ limit: 100, status: "active" });
+  const doctors = doctorsData?.doctors ?? [];
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({
@@ -274,13 +277,18 @@ export default function EditPatientPage({
                 <div className="grid grid-cols-1 gap-4">
                   <div>
                     <label className={labelClass}>Assigned Doctor</label>
-                    <input
-                      type="text"
+                    <select
                       value={form.assignedDoctor}
                       onChange={(e) => update("assignedDoctor", e.target.value)}
-                      placeholder="Doctor's name"
-                      className={inputClass}
-                    />
+                      className={selectClass}
+                    >
+                      <option value="">Select a doctor</option>
+                      {doctors.map((doc) => (
+                        <option key={doc._id} value={doc.name}>
+                          Dr. {doc.name} — {doc.department || "General"}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                   <div>
                     <label className={labelClass}>Medical History</label>

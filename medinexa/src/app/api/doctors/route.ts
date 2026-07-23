@@ -2,12 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 import { getAuth, getSession } from "@/lib/server/auth";
 import { getDB } from "@/lib/server/db";
+import { escapeRegex, sanitizeSortField } from "@/lib/server/query-utils";
 
 const DOCTOR_UPDATABLE_FIELDS = [
   "name", "email", "phone", "image", "gender", "dateOfBirth",
   "department", "specialization", "qualifications", "experience",
   "consultationFee", "availableDays", "availableTime", "hospitalBranch",
   "biography", "status", "rating",
+];
+
+const DOCTOR_SORT_FIELDS = [
+  "name", "email", "createdAt", "updatedAt", "department", "status", "rating",
 ];
 
 function pickDoctorFields(body: Record<string, unknown>) {
@@ -38,13 +43,13 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get("search") || "";
     const department = searchParams.get("department") || "";
     const status = searchParams.get("status") || "";
-    const sortBy = searchParams.get("sortBy") || "createdAt";
+    const sortBy = sanitizeSortField(searchParams.get("sortBy") || "createdAt", DOCTOR_SORT_FIELDS);
     const sortOrder = searchParams.get("sortOrder") || "desc";
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
 
     const query: Record<string, unknown> = {};
-    if (search.trim()) query.name = { $regex: search.trim(), $options: "i" };
+    if (search.trim()) query.name = { $regex: escapeRegex(search.trim()), $options: "i" };
     if (department) query.department = department;
     if (status) query.status = status;
 

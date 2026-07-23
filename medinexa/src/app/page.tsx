@@ -16,27 +16,34 @@ export default function Home() {
 
       {/* Main content sections */}
       <main className="flex-1">
-        {/* Section 1: Hero */}
-        <Hero />
+        <div id="home">
+          <Hero />
+        </div>
         
-        {/* Section 2: Why Choose Us */}
-        <WhyChooseUs />
+        <div id="why-choose-us">
+          <WhyChooseUs />
+        </div>
 
-        {/* Section 3: Medical Departments */}
-        <DepartmentsSection />
+        <div id="services">
+          <DepartmentsSection />
+        </div>
 
-        {/* Section 4: Meet Our Expert Doctors */}
-        <DoctorsSection />
+        <div id="doctors">
+          <DoctorsSection />
+        </div>
 
-        {/* Section 5: Patient Testimonials */}
         <TestimonialsSection />
 
-        {/* Section 6: Appointment Call-to-Action */}
         <AppointmentCTA />
 
-        {/* Section 7: Frequently Asked Questions */}
-        <FAQSection />
+        <div id="faq">
+          <FAQSection />
+        </div>
       </main>
+
+      <div id="contact">
+        <Footer />
+      </div>
 
       {/* Page Footer */}
       <Footer />

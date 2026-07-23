@@ -7,7 +7,9 @@ export function middleware(request: NextRequest) {
   const isProtected = pathname.startsWith("/dashboard");
 
   if (isProtected) {
-    const sessionCookie = request.cookies.get("medinexa.session_token");
+    const sessionCookie =
+      request.cookies.get("medinexa.session_token") ??
+      request.cookies.get("__Secure-medinexa.session_token");
     if (!sessionCookie) {
       const loginUrl = new URL("/login", request.url);
       loginUrl.searchParams.set("redirect", pathname);
@@ -19,5 +21,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/login", "/register"],
+  matcher: ["/dashboard/:path*"],
 };

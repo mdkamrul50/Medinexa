@@ -54,7 +54,7 @@ const patientNav: RoleNavItem[] = [
   { label: "My Appointments", href: "/dashboard/appointments", icon: FiCalendar },
   { label: "Medical Records", href: "/dashboard/records", icon: FiFileText },
   { label: "Prescriptions", href: "/dashboard/prescriptions", icon: FiFileText },
-  { label: "Profile", href: "/dashboard/profile", icon: FiSettings },
+  { label: "Profile", href: "/dashboard/profile", icon: FiUser },
 ];
 
 const receptionistNav: RoleNavItem[] = [

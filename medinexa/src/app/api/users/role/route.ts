@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/server/auth";
 import { getDB } from "@/lib/server/db";
+import { ObjectId } from "mongodb";
 
 export async function PATCH(request: NextRequest) {
   try {
@@ -10,10 +11,17 @@ export async function PATCH(request: NextRequest) {
     if (!session) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
+    if (session.user.role !== "admin") {
+      return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+    }
 
     const { userId, role } = await request.json();
     if (!userId || !role) {
       return NextResponse.json({ message: "userId and role are required" }, { status: 400 });
+    }
+
+    if (!ObjectId.isValid(userId)) {
+      return NextResponse.json({ message: "Invalid userId format" }, { status: 400 });
     }
 
     const validRoles = ["admin", "doctor", "patient", "receptionist"];
@@ -22,7 +30,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     const db = await getDB();
-    const result = await db.collection("users").updateOne({ _id: userId }, { $set: { role } });
+    const result = await db.collection("users").updateOne({ _id: new ObjectId(userId) }, { $set: { role } });
 
     if (result.matchedCount === 0) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });

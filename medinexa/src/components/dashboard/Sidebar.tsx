@@ -94,6 +94,7 @@ export default function Sidebar({
               onClick={() => {
                 if (mobileOpen) onMobileClose();
               }}
+              title={collapsed ? item.label : undefined}
               className={`group relative flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold transition-all duration-200 ${
                 isActive
                   ? "bg-primary/10 text-primary shadow-sm shadow-primary/5"

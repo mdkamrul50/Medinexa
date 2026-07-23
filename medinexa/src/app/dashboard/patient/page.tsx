@@ -107,7 +107,7 @@ function PaymentRow({ item }: { item: PaymentItem }) {
 
 export default function PatientDashboardPage() {
   const { user } = useUser();
-  const { data, loading } = usePatientDashboard();
+  const { data, loading, error } = usePatientDashboard();
 
   const firstName = user?.name?.split(" ")[0] ?? "Patient";
 
@@ -137,6 +137,12 @@ export default function PatientDashboardPage() {
               title={`Welcome back, ${firstName}`}
               description="Manage your appointments, medical records, and prescriptions."
             />
+
+            {error && (
+              <div className="rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 px-4 py-3 text-sm text-red-600 dark:text-red-400">
+                {error}
+              </div>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <StatCard

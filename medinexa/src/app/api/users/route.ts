@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/server/auth";
 import { getDB } from "@/lib/server/db";
-import { ObjectId } from "mongodb";
 
 export async function GET() {
   try {
@@ -10,6 +9,9 @@ export async function GET() {
     );
     if (!session) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+    if (session.user.role !== "admin") {
+      return NextResponse.json({ message: "Forbidden" }, { status: 403 });
     }
 
     const db = await getDB();

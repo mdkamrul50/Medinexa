@@ -119,13 +119,19 @@ export default function Footer() {
           <div className="lg:col-span-2 space-y-4">
             <h4 className="text-xs font-bold text-white uppercase tracking-widest">Quick Links</h4>
             <ul className="space-y-3">
-              {['Home', 'About', 'Services', 'Doctors', 'Contact'].map((link) => (
-                <li key={link}>
+              {[
+                { name: 'Home', href: '#home' },
+                { name: 'About', href: '#why-choose-us' },
+                { name: 'Services', href: '#services' },
+                { name: 'Doctors', href: '#doctors' },
+                { name: 'Contact', href: '#contact' },
+              ].map((link) => (
+                <li key={link.name}>
                   <a
-                    href={`#${link.toLowerCase()}`}
+                    href={link.href}
                     className="text-sm font-semibold text-slate-400 hover:text-white transition-colors duration-200"
                   >
-                    {link}
+                    {link.name}
                   </a>
                 </li>
               ))}
@@ -160,18 +166,18 @@ export default function Footer() {
             <h4 className="text-xs font-bold text-white uppercase tracking-widest">Support</h4>
             <ul className="space-y-3">
               {[
-                'Help Center',
-                'Privacy Policy',
-                'Terms & Conditions',
-                'Contact Support',
-                'FAQ'
+                { name: 'Help Center', href: '/dashboard/help' },
+                { name: 'Privacy Policy', href: '#privacy-policy' },
+                { name: 'Terms & Conditions', href: '#terms' },
+                { name: 'Contact Support', href: '#contact' },
+                { name: 'FAQ', href: '#faq' },
               ].map((support) => (
-                <li key={support}>
+                <li key={support.name}>
                   <a
-                    href="#support"
+                    href={support.href}
                     className="text-sm font-semibold text-slate-400 hover:text-white transition-colors duration-200"
                   >
-                    {support}
+                    {support.name}
                   </a>
                 </li>
               ))}
@@ -214,9 +220,8 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-12 text-xs font-semibold text-slate-500">
           <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 md:gap-6">
             <span>© {currentYear} Medinexa Inc. All rights reserved.</span>
-            <a href="#privacy" className="hover:text-slate-400 transition-colors">Privacy Policy</a>
+            <a href="#privacy-policy" className="hover:text-slate-400 transition-colors">Privacy Policy</a>
             <a href="#terms" className="hover:text-slate-400 transition-colors">Terms of Service</a>
-            <a href="#cookies" className="hover:text-slate-400 transition-colors">Cookie Settings</a>
           </div>
 
           <div className="flex items-center gap-1 text-[11px]">
